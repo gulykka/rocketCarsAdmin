@@ -1,0 +1,312 @@
+@mixin default_container($flex-direction: row, $row_gap, $column_gap)
+  flex-direction: $flex-direction
+  row-gap: $row_gap
+  column-gap: $column_gap
+  display: flex
+
+@import "slick-carousel/slick/slick.css"
+@import "slick-carousel/slick/slick-theme.css"
+
+.img_logo_mini
+  width: 60px
+  height: 60px
+
+header
+  background: #181A19
+  @include default_container(row, 10px, 10px)
+  justify-content: space-between
+  padding: 30px 50px
+.navigation
+  @include default_container(row, 0px, 20px)
+.home_button_img
+  width: 28px
+  height: 25px
+.out_button_img
+  width: 20px
+  height: 28px
+.home_button
+  cursor: pointer
+  border: none
+  background: #222423
+  width: 60px
+  height: 60px
+  border-radius: 16px
+.search_container
+  @include default_container(row, 10px, 10px)
+.work_panel_container
+  @include default_container(row, 10px, 10px)
+  justify-content: space-between
+  width: 100%
+  font-size: 16px
+select
+  background: #181A19
+  padding: 10px 15px
+  border-radius: 16px
+  color: white
+  font-size: 16px
+  height: 100%
+  &:focus
+    border-end-end-radius: 0px
+    border-end-start-radius: 0px
+.input_search
+  padding: 10px 15px
+  border-radius: 16px
+  color: white
+  text-align: left
+  max-width: 300px
+  background: #181A19
+  border: 2px #373A39 solid
+  &::placeholder
+    text-align: center
+.operation_car_container, .completed_cars_list_container
+  @include default_container(column, 10px, 10px)
+
+.photo_car
+  //max-width: 300px
+  border-radius: 16px
+
+.photos_container
+  @include default_container(column, 10px, 10px)
+  width: 300px
+
+.operation_car_card_container, .completed_car_card_container
+  background: #222423
+  border-radius: 16px
+  padding: 35px
+  color: white
+  display: grid
+  gap: 20px
+  grid-template-columns: 3fr 1fr
+.information_container
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  grid-template-rows: repeat(2, 1fr)
+  gap: 10px
+  grid-template-areas: 'person car' 'status status'
+
+.information_person_container
+  grid-area: person
+  @include default_container(column, 10px, 10px)
+
+.information_car_container
+  grid-area: car
+  @include default_container(column, 10px, 10px)
+
+.information_car_status_container
+  grid-area: status
+.line
+  height: 6px
+  background: #373A39
+  border: none
+  position: relative
+  top: -6px
+  left: 0
+
+.line_progress
+  height: 6px
+  position: relative
+  z-index: 3
+  top: 0
+  left: 0
+  border: none
+  background: linear-gradient(to right, #F08319, #E51B2F)
+.status_completed_container
+  border-radius: 16px
+  left: 0
+  border: 2px solid transparent
+  padding: 10px
+  background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+
+.status_container
+  outline: none
+  position: relative
+  z-index: 3
+  top: -10px
+  border-radius: 16px
+  left: 0
+  border: 2px solid transparent
+  padding: 10px
+  background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+.status_completed
+  border-radius: 16px
+  left: 0
+  border: 2px solid transparent
+  padding: 10px
+  background: linear-gradient(to right, #F08319, #E51B2F)
+  -webkit-background-clip: text
+  -webkit-text-fill-color: transparent
+.status
+  outline: none
+  position: relative
+  z-index: 3
+  top: -0px
+  border-radius: 16px
+  left: 0
+  border: 2px solid transparent
+  padding: 10px
+  background: linear-gradient(to right, #F08319, #E51B2F)
+  -webkit-background-clip: text
+  -webkit-text-fill-color: transparent
+
+.circle
+  top: -31px
+  position: relative
+  background: #373A39
+  width: 15px
+  height: 15px
+  z-index: 3
+  border-radius: 50%
+.circle_progress
+  top: -16px
+  position: relative
+  background: linear-gradient(to right, #F08319, #E51B2F)
+  width: 15px
+  height: 15px
+  z-index: 3
+  border-radius: 50%
+
+.information_car_completed_status_container
+  @include default_container(row, 10px, 10px)
+  align-items: center
+
+
+.navigation_link
+  color: white
+  text-decoration: none
+
+.whatsapp
+  width: 30px
+
+
+.change_password_container
+  @include default_container(row, 10px, 10px)
+.profile_container
+  font-size: 22px
+  @include default_container(row, 10px, 10px)
+  align-items: flex-start
+  justify-content: space-between
+  background: #222423
+  border-radius: 16px
+  padding: 35px
+  color: white
+
+.informations_person_container
+  @include default_container(column, 10px, 10px)
+
+.overlay
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  background-color: rgba(0, 0, 0, 0.8)
+  z-index: 1000
+.shadow_window_img_container
+  position: fixed
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+  width: 80%
+  height: 80%
+  padding: 10px
+  border-radius: 10px
+  z-index: 1001
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 10px
+  justify-content: center
+
+//.change_input
+//  max-width: 400px
+//  outline: none
+//  border: 2px solid transparent
+//  background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+//  &:focus
+//    background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+.save
+  width: 200px
+
+.change_password_window_container
+  @include default_container(column, 20px, 10px)
+  align-items: center
+  background: #222423
+  padding: 70px
+  border-radius: 16px
+.change_input_container
+  position: absolute
+.cancel
+  cursor: pointer
+  width: 25px
+  position: relative
+  right: -700px
+  top: -390px
+  transition: all 1s
+  &:hover
+    opacity: 0.5
+
+.input-container_
+  position: relative
+input:focus + .placeholder_,
+input:not(:placeholder-shown) + .placeholder_
+  top: -10px
+  z-index: 2
+  left: 10px
+  font-size: 14px
+  background: #222423
+  background: linear-gradient(to right, #F08319, #E51B2F)
+  -webkit-background-clip: text
+  -webkit-text-fill-color: transparent
+
+.placeholder_
+  position: absolute
+  left: 10px
+  top: 18px
+  transition: all 0.3s ease
+  color: #8E8E8E
+  font-size: 18px
+  pointer-events: none
+  text-align: center
+  width: calc(100% - 20px)
+  background: #222423
+  border-radius: 8px
+
+.change_input
+  padding: 10px 0px
+  text-align: center
+  border-radius: 10px
+  border: 2px solid transparent
+  font-size: 18px
+  height: 30px
+  background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+  width: 600px
+  transition: all 0.3s
+  color: white
+  &:focus
+    outline: none
+    border: 2px solid transparent
+    background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+.background_new
+  color: #222423
+  z-index: 0
+  position: absolute
+  background: #222423
+  left: 35%
+  top: -12px
+  width: 180px
+.background_new_
+  color: #222423
+  z-index: 0
+  position: absolute
+  background: #222423
+  left: 34%
+  top: -12px
+  width: 190px
+.background_old
+  color: #222423
+  z-index: 0
+  position: absolute
+  background: #222423
+  left: 35%
+  top: -12px
+  width: 180px

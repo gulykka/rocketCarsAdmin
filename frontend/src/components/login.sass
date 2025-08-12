@@ -1,0 +1,116 @@
+@mixin default_container($flex-direction: row, $row_gap, $column_gap)
+  flex-direction: $flex-direction
+  row-gap: $row_gap
+  column-gap: $column_gap
+  display: flex
+
+.login_container
+  @include default_container(column, 20px, 10px)
+  align-items: center
+  width: 100%
+
+.img_logo
+  width: 120px
+
+.title
+  color: white
+  text-align: center
+  font-size: 40px
+
+.form_signin_container
+  @include default_container(column, 30px, 10px)
+  align-items: center
+
+input
+  padding: 10px 0px
+  text-align: center
+  border-radius: 10px
+  border: 2px solid transparent
+  font-size: 18px
+  height: 30px
+  background: linear-gradient(#ff7979, #181A19 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+  width: 600px
+  transition: all 0.3s
+  color: white
+  &:focus
+    outline: none
+    border: 2px solid transparent
+    background: linear-gradient(#ff7979, #181A19 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+
+
+.placeholder
+  position: absolute
+  left: 10px
+  top: 18px
+  transition: all 0.3s ease
+  color: #8E8E8E
+  font-size: 18px
+  pointer-events: none
+  text-align: center
+  width: calc(100% - 20px)
+  background: transparent
+  border-radius: 8px
+
+.input-container
+  position: relative
+
+input:focus + .placeholder,
+input:not(:placeholder-shown) + .placeholder
+  top: -10px
+  z-index: 2
+  left: 10px
+  font-size: 14px
+  background: #181A19
+  background: linear-gradient(to right, #F08319, #E51B2F)
+  -webkit-background-clip: text
+  -webkit-text-fill-color: transparent
+
+.background
+  color: #181A19
+  z-index: 0
+  position: absolute
+  background: #181A19
+  left: 40%
+  top: -12px
+  width: 119px
+
+.background_VIN
+  color: #181A19
+  z-index: 0
+  position: absolute
+  background: #181A19
+  left: 39%
+  top: -10px
+  width: 130px
+
+.button_signin
+  padding: 14px 43px
+  max-width: 194px
+  font-size: 20px
+  background: linear-gradient(to right, #F08319, #E51B2F)
+  color: white
+  border: none
+  border-radius: 13px
+  &:hover
+    background: linear-gradient(to right, rgba(240, 131, 25, 0.7), rgba(229, 27, 47, 0.7))
+
+@media (max-width: 600px)
+  .background
+    left: 21%
+    width: 230px
+  .background_VIN
+    left: 36%
+    width: 110px
+  input
+    max-width: 400px
+    font-size: 20px
+@media (max-width: 400px)
+  .background
+    left: 10%
+    width: 225px
+  .background_VIN
+    left: 31%
+    width: 110px
+  input
+    max-width: 280px
+    height: 50px

@@ -1,0 +1,17 @@
+@mixin default_container($flex-direction: row, $row_gap, $column_gap)
+  flex-direction: $flex-direction
+  row-gap: $row_gap
+  column-gap: $column_gap
+  display: flex
+
+.login_page_container
+  @include default_container(column, 10px, 0px)
+  padding: 70px
+  height: 100%
+  color: white
+  z-index: 2
+
+.car_operation_page, .completed_cars_container, .profile_page_container
+  @include default_container(column, 30px, 10px)
+  justify-content: space-between
+  padding: 10px 50px

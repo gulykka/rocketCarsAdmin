@@ -21,8 +21,10 @@ const Profile = () => {
                 <span>Количество машин в работе: {informationPerson.workOperationCars}</span>
                 <div className={'change_password_container'}>
                     <span>Ваш личный менеджер:</span>
-                    <span>{informationPerson.managerName}</span>
-                    <img src={'whatsapp.png'} className={'whatsapp'}/>
+                    <div className={'info'}>
+                        <span>{informationPerson.managerName}</span>
+                        <img src={'whatsapp.png'} className={'whatsapp'}/>
+                    </div>
                 </div>
             </div>
             <ColorButton onClick={() => setVisibleImageWindow(true)}>Задать новый пароль</ColorButton>

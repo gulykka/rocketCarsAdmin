@@ -60,14 +60,21 @@ select
     text-align: center
 .operation_car_container, .completed_cars_list_container
   @include default_container(column, 10px, 10px)
+@media (max-width: 850px)
+  .operation_car_card_container
+    @include default_container(column, 10px, 10px)
 
 .photo_car
-  //max-width: 300px
   border-radius: 16px
 
 .photos_container
   @include default_container(column, 10px, 10px)
   width: 300px
+
+@media (max-width: 850px)
+  .photos_container
+    width: 100%
+
 
 .operation_car_card_container, .completed_car_card_container
   background: #222423
@@ -77,7 +84,27 @@ select
   display: grid
   gap: 20px
   grid-template-columns: 3fr 1fr
-.information_container
+
+@media (max-width: 750px)
+  .information_container
+    grid-template-columns: 1fr !important
+    grid-auto-flow: row
+    grid-template-rows: auto auto auto auto !important
+    grid-template-areas: 'person' 'car' 'status' !important
+@media (max-width: 750px)
+  .information_container
+    align-self: center
+
+@media (max-width: 855px)
+  .completed_car_card_container, .operation_car_card_container
+    display: flex !important
+    flex-direction: column
+@media (max-width: 550px)
+  .information_container_
+    display: flex !important
+    flex-direction: column
+
+.information_container, .information_container_
   display: grid
   grid-template-columns: repeat(2, 1fr)
   grid-template-rows: repeat(2, 1fr)
@@ -117,6 +144,7 @@ select
   padding: 10px
   background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
 
+
 .status_container
   outline: none
   position: relative
@@ -127,6 +155,11 @@ select
   border: 2px solid transparent
   padding: 10px
   background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+@media (max-width: 550px)
+  .status_container
+    font-size: 14px
+    padding: 5px
+
 .status_completed
   border-radius: 16px
   left: 0
@@ -177,9 +210,20 @@ select
 .whatsapp
   width: 30px
 
-
+.info
+  display: flex
+  gap: 10px
+@media(max-width: 460px)
+  .info
+    @include default_container(column, 10px, 10px)
 .change_password_container
   @include default_container(row, 10px, 10px)
+@media(max-width: 730px)
+  .change_password_container
+    @include default_container(column, 10px, 10px)
+@media(max-width: 460px)
+
+
 .profile_container
   font-size: 22px
   @include default_container(row, 10px, 10px)
@@ -189,7 +233,9 @@ select
   border-radius: 16px
   padding: 35px
   color: white
-
+@media(max-width: 960px)
+  .profile_container
+    @include default_container(column, 10px, 10px)
 .informations_person_container
   @include default_container(column, 10px, 10px)
 
@@ -217,13 +263,31 @@ select
   gap: 10px
   justify-content: center
 
-//.change_input
-//  max-width: 400px
-//  outline: none
-//  border: 2px solid transparent
-//  background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
-//  &:focus
-//    background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+.slider
+  width: 65%
+
+@media(max-width: 1000px)
+  .slider
+    width: 85%
+.slick-dots li button
+  display: block
+  width: 15px
+  height: 15px
+  border-radius: 50%
+  background: #D9D9D9
+
+.slick-dots li.slick-active button
+  background: linear-gradient(to right, #F08319, #E51B2F)
+  opacity: 1
+button::before
+  display: none
+
+.slick-prev
+  left: -50px
+.slick-next
+  right: -20px
+
+
 .save
   width: 200px
 

@@ -23,7 +23,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
 
     return (
         <div className={'operation_car_card_container'}>
-            <div className={'information_container'}>
+            <div className={'information_container_'}>
                 <div className={'information_person_container'}>
                     <span>{operationCar.name}</span>
                     <span>{operationCar.VIN}</span>

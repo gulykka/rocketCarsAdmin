@@ -13,6 +13,9 @@ const CompletedCarsList = () => {
             photos: [
                 {
                     url: 'photos_1.jpg'
+                },
+                {
+                    url: 'photos_2.jpg'
                 }
             ],
             status: 'Успешно получен'

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class Status(BaseModel):
@@ -13,6 +14,7 @@ class Car(BaseModel):
     year: str | None
     photos: list[str | None] | None
     status: Status
+    datetime: datetime | None
 
 
 class Manager(BaseModel):
@@ -30,9 +32,9 @@ class Authorization(BaseModel):
 
 
 class ChangePass(BaseModel):
+    login: str
     old: str
     new: str
-    repeat: str
 
 
 class CarResponse(BaseModel):

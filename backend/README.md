@@ -94,7 +94,10 @@ backend/
     "VIN": "VIN1234567890",
     "auto": "Модель",
     "year": "2023",
-    "status_complete": false
+    "status": {
+		    "level": 6,
+		    "description": "Описание стадии"
+		}
   }
 ]
 ```

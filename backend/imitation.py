@@ -23,8 +23,8 @@ async def read_root(data: Authorization):
         for car in cars_data:
             car["photos"] = ["https://placedog.net/500" for i in range(3)]
         cars = [Car(**car) for car in cars_data]
-        completed_cars = [car for car in cars if car.status_complete]
-        worked_cars = [car for car in cars if not car.status_complete]
+        completed_cars = [car for car in cars if car.status.level == 6]
+        worked_cars = [car for car in cars if not car.status.level == 6]
         return CarResponse(
 			user=test_user,
 			manager=test_manager,

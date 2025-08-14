@@ -1,5 +1,9 @@
 from pydantic import BaseModel
-from pydantic import HttpUrl
+
+
+class Status(BaseModel):
+    level: int
+    description: str
 
 
 class Car(BaseModel):
@@ -8,7 +12,7 @@ class Car(BaseModel):
     auto: str | None
     year: str | None
     photos: list[str | None] | None
-    status_complete: bool
+    status: Status
 
 
 class Manager(BaseModel):
@@ -29,6 +33,7 @@ class ChangePass(BaseModel):
     old: str
     new: str
     repeat: str
+
 
 class CarResponse(BaseModel):
     user: User

@@ -4,69 +4,99 @@
 		"VIN": "5YJSA1E14GF123456",
 		"auto": "Tesla",
 		"year": "2023",
-		"status_complete": true
+		"status": {
+			"level": 6,
+			"description": "Авто выдан"
+		}
 	},
 	{
 		"name": "Паша",
 		"VIN": "5UXCR6C5XJ9A12345",
 		"auto": "BMW",
 		"year": "2022",
-		"status_complete": false
+		"status": {
+			"level": 6,
+			"description": "Авто выдан"
+		}
 	},
 	{
 		"name": "Глаша A6",
 		"VIN": "WAUAFDF58HN012345",
 		"auto": "Audi",
 		"year": "2021",
-		"status_complete": true
+		"status": {
+			"level": 1,
+			"description": "На оплате/на заводе"
+		}
 	},
 	{
 		"name": "Хз кто это",
 		"VIN": "WDDWF8KB0ER123456",
 		"auto": "Mercedes",
 		"year": "2020",
-		"status_complete": true
+		"status": {
+			"level": 2,
+			"description": "На стоянке в Китае"
+		}
 	},
 	{
 		"name": "Лох Цветочный",
 		"VIN": "1ZVBP8EM9J5123456",
 		"auto": "Ford",
 		"year": "2019",
-		"status_complete": false
+		"status": {
+			"level": 1,
+			"description": "На оплате/на заводе"
+		}
 	},
 	{
 		"name": "Лена Головач",
 		"VIN": "4T1BF1FKXEU123456",
 		"auto": "Toyota",
 		"year": "2023",
-		"status_complete": true
+		"status": {
+			"level": 4,
+			"description": "На СВХ"
+		}
 	},
 	{
 		"name": "Рик",
 		"VIN": "1HGCP2F9XLA123456",
 		"auto": "Honda",
 		"year": "2022",
-		"status_complete": true
+		"status": {
+			"level": 3,
+			"description": "Доставка в РФ"
+		}
 	},
 	{
 		"name": "Морти",
 		"VIN": "WP0AB2A98HS789012",
 		"auto": "Porsche",
 		"year": "2024",
-		"status_complete": false
+		"status": {
+			"level": 1,
+			"description": "На оплате/на заводе"
+		}
 	},
 	{
 		"name": "Джерри",
 		"VIN": "2T2BZMCA1JC123456",
 		"auto": "Lexus",
 		"year": "2021",
-		"status_complete": true
+		"status": {
+			"level": 2,
+			"description": "На стоянке в Китае"
+		}
 	},
 	{
 		"name": "Мистер Жопосранчик",
 		"VIN": "YV1A22MKXJ2123456",
 		"auto": "Volvo",
 		"year": "2020",
-		"status_complete": true
+		"status": {
+			"level": 6,
+			"description": "Авто выдан"
+		}
 	}
 ]

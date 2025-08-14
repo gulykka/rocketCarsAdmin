@@ -1,0 +1,25 @@
+# Папка виртуального окружения Python
+.venv/
+venv/
+
+# Кэш-папки и временные файлы
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Файлы кэша IDE/редакторов
+.vscode/
+.idea/
+.DS_Store (для macOS)
+
+# Логи и кэш зависимостей
+*.log
+*.tmp
+*.swp
+*.egg-info/
+pip-log.txt
+
+# Файлы окружения (env)
+.env
+.env.local
+secrets.ini

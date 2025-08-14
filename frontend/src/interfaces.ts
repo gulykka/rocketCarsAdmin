@@ -18,4 +18,19 @@ export interface ICompletedCar{
 
 export interface ICarPhoto {
     url: string
+
+}
+
+export interface IManager {
+    name: string
+    number: string
+}
+
+export interface IData {
+    id: string
+    name: string
+    manager: IManager
+    completedCars: ICompletedCar[]
+    OperationCars: IOperationCar[]
+
 }

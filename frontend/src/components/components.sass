@@ -24,7 +24,14 @@ header
 .out_button_img
   width: 20px
   height: 28px
-.home_button
+.cancel_button
+  width: 20px
+  height: 20px
+.menu_button
+  display: none
+  z-index: 1003
+  position: relative
+.home_button, .menu_button
   cursor: pointer
   border: none
   background: #222423
@@ -33,14 +40,26 @@ header
   border-radius: 16px
 .search_container
   @include default_container(row, 10px, 10px)
+@media (max-width: 750px)
+  .search_container
+    justify-content: space-between
+@media (max-width: 520px)
+  .search_container
+    @include default_container(column, 10px, 10px)
+  .input_search
+    width: calc(100% - 34px)
 .work_panel_container
   @include default_container(row, 10px, 10px)
   justify-content: space-between
   width: 100%
   font-size: 16px
+@media (max-width: 750px)
+  .work_panel_container
+    @include default_container(column, 10px, 10px)
+
 select
   background: #181A19
-  padding: 10px 15px
+  padding: 15px 15px
   border-radius: 16px
   color: white
   font-size: 16px
@@ -58,6 +77,9 @@ select
   border: 2px #373A39 solid
   &::placeholder
     text-align: center
+@media (max-width: 750px)
+  .input_search
+    max-width: 100%
 .operation_car_container, .completed_cars_list_container
   @include default_container(column, 10px, 10px)
 @media (max-width: 850px)
@@ -246,7 +268,44 @@ select
   right: 0
   bottom: 0
   background-color: rgba(0, 0, 0, 0.8)
+  z-index: 1004
+.overlay_
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  background-color: rgba(0, 0, 0, 0.8)
   z-index: 1000
+.popup_menu_container
+  @include default_container(column, 10px, 10px)
+  background: #222423
+  position: fixed
+  z-index: 1002
+  right: 50px
+  top: 30px
+  bottom: 30px
+  padding: 80px 10px 10px
+  border-radius: 16px
+.none
+  display: none
+
+.popup_menu_link
+  padding: 5px
+  font-size: 18px
+  text-decoration: none
+  color: #b5b5b5
+  transition: all 1s
+  &:hover
+    color: #ffffff
+
+.grey_popup_menu_link
+  opacity: 0.5
+  padding: 5px
+  font-size: 18px
+  text-decoration: none
+  color: #D9D9D9
+
 .shadow_window_img_container
   position: fixed
   top: 50%
@@ -256,7 +315,7 @@ select
   height: 80%
   padding: 10px
   border-radius: 10px
-  z-index: 1001
+  z-index: 1005
   display: flex
   flex-direction: column
   align-items: center
@@ -286,8 +345,6 @@ button::before
   left: -50px
 .slick-next
   right: -20px
-
-
 .save
   width: 200px
 
@@ -297,14 +354,21 @@ button::before
   background: #222423
   padding: 70px
   border-radius: 16px
+@media (max-width: 600px)
+  .change_password_window_container
+    padding: 60px 50px 50px
+@media (max-width: 450px)
+  .change_password_window_container
+    padding: 60px 30px 30px
+
 .change_input_container
-  position: absolute
+  position: relative
 .cancel
   cursor: pointer
   width: 25px
-  position: relative
-  right: -700px
-  top: -390px
+  position: absolute
+  right: 15px
+  top: 15px
   transition: all 1s
   &:hover
     opacity: 0.5
@@ -350,6 +414,12 @@ input:not(:placeholder-shown) + .placeholder_
     outline: none
     border: 2px solid transparent
     background: linear-gradient(#ff7979, #222423 0) padding-box, linear-gradient(to right, #F08319, #E51B2F) border-box
+@media (max-width: 800px)
+  .change_input
+    width: 400px
+@media (max-width: 600px)
+  .change_input
+    width: 300px
 .background_new
   color: #222423
   z-index: 0
@@ -374,3 +444,10 @@ input:not(:placeholder-shown) + .placeholder_
   left: 35%
   top: -12px
   width: 180px
+
+@media (max-width: 750px)
+  .navigation_link, .home_button
+    display: none
+  .menu_button
+    display: block
+

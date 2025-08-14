@@ -1,14 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './components.sass'
 import GreyButton from "./UI/GreyButton";
 import {Link, useLocation} from "react-router-dom";
 
 const Header = () => {
-
+    const [isVisible, setIsVisible] = useState(false)
     const location = useLocation().pathname
 
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setIsVisible(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isVisible]);
     return (
-        <header>
+        <header className={location === '/' ? 'none' : ''}>
             <div className={'navigation'}>
                 <img className={'img_logo_mini'} src={'logo.png'}/>
                 <Link
@@ -43,6 +54,42 @@ const Header = () => {
                         src={'signout_button.png'}
                         alt={'Выйти'}/>
                 </button>
+                <button
+                    title={'Выйти'}
+                    onClick={() => setIsVisible(!isVisible)}
+                    className={'menu_button'}>
+                    <img
+                        className={isVisible ? 'out_button_img cancel_button' : 'out_button_img'}
+                        src={isVisible ? 'cancel.png' : 'menu.png'}
+                        alt={'Выйти'}/>
+                </button>
+            </div>
+            <div className={isVisible ? 'overlay_' : 'none'} onClick={() => setIsVisible(false)}/>
+            <div className={isVisible ? 'popup_menu_container' : 'none'}>
+                <Link
+                    onClick={() => setIsVisible(false)}
+                    to={'/profile'}
+                    className={location === '/profile' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
+                    Личный кабинет
+                </Link>
+                <Link
+                    onClick={() => setIsVisible(false)}
+                    to={'/completed'}
+                    className={location === '/completed' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
+                    Авто в работе
+                </Link>
+                <Link
+                    onClick={() => setIsVisible(false)}
+                    to={'/operation'}
+                    className={location === '/operation' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
+                    Выданные авто
+                </Link>
+                <Link
+                    onClick={() => setIsVisible(false)}
+                    to={''}
+                    className={'popup_menu_link'}>
+                    Выйти
+                </Link>
             </div>
         </header>
     );

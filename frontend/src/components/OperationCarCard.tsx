@@ -3,6 +3,7 @@ import ColorButton from "./UI/ColorButton";
 import {getOffset, getStatusCode} from "../status";
 import {ICar} from "../interfaces";
 import ShadowWindow from "./ShadowWindow";
+import {formatDateToDDMMYYYY} from "../functions/changeDate";
 
 interface OperationCarCardProps {
     operationCar: ICar
@@ -11,14 +12,7 @@ interface OperationCarCardProps {
 const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
     const [visibleImageWindow, setVisibleImageWindow] = useState(false);
     const code = operationCar.status.level
-    const lenStatus = {
-        1: '80px',
-        2: '80px',
-        3: '70px',
-        4: '40px',
-        5: '55px',
-        6: '55px'
-    }
+
 
 
     return (
@@ -52,6 +46,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
                         <span className={'status'}>{operationCar.status.description}</span>
                     </span>
                 </div>
+                <span>Дата изменения последнего статуса: {formatDateToDDMMYYYY(operationCar.status.datetime)}</span>
             </div>
             <div className={'photos_container'}>
                 <img
@@ -60,7 +55,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
                     }}
                     className={'photo_car'}
                     alt={'car_photo'}
-                    src={operationCar.photos[0].url}/>
+                    src={operationCar.photos[0]}/>
                 <ColorButton>Скачать</ColorButton>
             </div>
             {visibleImageWindow && (

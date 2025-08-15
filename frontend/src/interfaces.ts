@@ -1,7 +1,7 @@
 export interface IStatus {
     level: number,
     description: string
-    dateTime: string | null
+    datetime: string
 }
 
 export interface ICar{
@@ -9,7 +9,7 @@ export interface ICar{
     VIN: string,
     auto: string,
     year: string,
-    photos: ICarPhoto[],
+    photos: string[],
     status: IStatus
 }
 

@@ -17,7 +17,7 @@ interface StatusLengths {
 }
 
 const LEN_STATUS: StatusLengths = {
-    1: '90px',
+    1: '70px',
     2: '90px',
     3: '80px',
     4: '50px',

@@ -7,17 +7,158 @@ export interface IDataState {
     data: IData | null
     error: string | null
     status: 'loading' | 'succeeded' | 'failed' | null
-    server_message: string | null
+    server_message: string | null,
+    login: string, //d
+    password: string //d
+    searchCCarBool: boolean
+    searchOCarBool: boolean
+    searchCCars: ICar[] | null
+    searchOCars: ICar[] | null
 }
 
 const initialState: IDataState = {
     isAuth: true,
-    data: null,
+    data: {
+        user: {name: 'Иванов Иван Иванович'},
+        manager: {
+            name: 'Петров Пётр Петрович',
+            number: '89144034586'
+        },
+        cars: [
+            {
+                name: "Ваня",
+                VIN: "5YJSA1E14GF123456",
+                auto: "Tesla",
+                year: "2023",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 6,
+                    description: "Авто выдан",
+                    datetime: "2024-04-01T09:15:30"
+                }
+            },
+            {
+                name: "Паша",
+                VIN: "5UXCR6C5XJ9A12345",
+                auto: "BMW",
+                year: "2022",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 6,
+                    description: "Авто выдан",
+                    datetime: "2024-04-03T14:22:10"
+                }
+            },
+            {
+                name: "Глаша A6",
+                VIN: "WAUAFDF58HN012345",
+                auto: "Audi",
+                year: "2021",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 1,
+                    description: "На оплате/на заводе",
+                    datetime: "2024-04-05T11:45:00"
+                }
+            },
+            {
+                name: "Хз кто это",
+                VIN: "WDDWF8KB0ER123456",
+                auto: "Mercedes",
+                year: "2020",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 2,
+                    description: "На стоянке в Китае",
+                    datetime: "2024-04-06T16:30:45"
+                }
+            },
+            {
+                name: "Лох Цветочный",
+                VIN: "1ZVBP8EM9J5123456",
+                auto: "Ford",
+                year: "2019",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 1,
+                    description: "На оплате/на заводе",
+                    datetime: "2024-04-07T08:10:20"
+                }
+            },
+            {
+                name: "Лена Головач",
+                VIN: "4T1BF1FKXEU123456",
+                auto: "Toyota",
+                year: "2023",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 4,
+                    description: "На СВХ",
+                    datetime: "2024-04-09T13:55:15"
+                }
+            },
+            {
+                name: "Рик",
+                VIN: "1HGCP2F9XLA123456",
+                auto: "Honda",
+                year: "2022",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 3,
+                    description: "Доставка в РФ",
+                    datetime: "2024-04-11T17:05:33"
+                }
+            },
+            {
+                name: "Морти",
+                VIN: "WP0AB2A98HS789012",
+                auto: "Porsche",
+                year: "2024",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 1,
+                    description: "На оплате/на заводе",
+                    datetime: "2024-04-13T10:40:12"
+                }
+            },
+            {
+                name: "Джерри",
+                VIN: "2T2BZMCA1JC123456",
+                auto: "Lexus",
+                year: "2021",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 2,
+                    description: "На стоянке в Китае",
+                    datetime: "2024-04-15T12:25:50"
+                }
+            },
+            {
+                name: "Мистер Жопосранчик",
+                VIN: "YV1A22MKXJ2123456",
+                auto: "Volvo",
+                year: "2020",
+                photos: ['photos_1.jpg', 'photos_2.jpg'],
+                status: {
+                    level: 6,
+                    description: "Авто выдан",
+                    datetime: "2024-04-17T18:00:00"
+                }
+            }
+        ]
+    },
     error: null,
     status: null,
-    server_message: null
-
+    server_message: null,
+    login: 'admin', //d
+    password: 'pass', //d
+    searchCCarBool: false,
+    searchOCarBool: false,
+    searchCCars: null,
+    searchOCars: null
 };
+
+
 
 export const fetchSignIn = createAsyncThunk(
     'dataSlice/fetchSignIn',
@@ -46,7 +187,7 @@ export const fetchSignIn = createAsyncThunk(
 
             return data.data
         } catch (e:any) {
-            return thunkAPI.rejectWithValue(e.message)
+            return thunkAPI.rejectWithValue('Ошибка авторизации.')
         }
     }
 )
@@ -77,7 +218,7 @@ export const fetchChangePassword = createAsyncThunk(
             }
 
         } catch (e:any) {
-            return thunkAPI.rejectWithValue(e.message)
+            return thunkAPI.rejectWithValue('Ошибка авторизации.')
         }
     }
 )
@@ -87,7 +228,7 @@ const dataSlice = createSlice({
     initialState,
     reducers : {
         signOut(state) {
-            state.data = null;
+            // state.data = null;
             state.isAuth = false;
             state.error = null;
             state.status = null;
@@ -100,8 +241,33 @@ const dataSlice = createSlice({
         },
         setServer(state) {
             state.server_message = 'Пароль успешно изменен!'
+        },
+        signIn(state) {
+            state.isAuth = true
+        },
+        searchOptionalCars(state, action) {
+            state.searchOCarBool = true
+            const searchTerm = action.payload?.toLowerCase() || '';
+            state.searchOCars = state.data?.cars?.filter(car =>
+                car.name.toLowerCase().includes(searchTerm) || car.auto.toLowerCase().includes(searchTerm)
+            ) || null;
+        },
+        clearSearchOptionalCars(state) {
+            state.searchOCars = null
+            state.searchOCarBool = false
+        },
+        searchCompletedCars(state, action) {
+            state.searchCCarBool = true
+            const searchTerm = action.payload?.toLowerCase() || '';
+            state.searchCCars = state.data?.cars?.filter(car =>
+                car.name.toLowerCase().includes(searchTerm) || car.auto.toLowerCase().includes(searchTerm)
+            ) || null;
+        },
+        clearSearchCompletedCars(state) {
+            state.searchCCars = null
+            state.searchCCarBool = false
         }
-    },
+     },
     extraReducers: (builder) => {
         builder
             .addCase(fetchSignIn.fulfilled, (state, action) => {
@@ -140,6 +306,9 @@ const dataSlice = createSlice({
     }
 })
 
-export const { signOut, deleteServerMessage, setServer } = dataSlice.actions;
+export const { signOut, deleteServerMessage, setServer,
+    signIn, searchOptionalCars, clearSearchOptionalCars,
+    clearSearchCompletedCars, searchCompletedCars,
+} = dataSlice.actions;
 
 export default dataSlice.reducer;

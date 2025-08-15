@@ -3,7 +3,7 @@ import {ICarPhoto} from "../interfaces";
 import Slider from "react-slick";
 
 interface PhotoSliderProps {
-    images: ICarPhoto[]
+    images: string[]
     selectedIndex?: number
 }
 
@@ -43,7 +43,7 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ images }) => {
         <Slider {...settings} className={'slider'}>
             {images.map((image, index) => (
                 <div key={index}>
-                    <img src={image.url} alt={`Slide ${index}`} style={{ width: '100%', height: 'auto' }} />
+                    <img src={image} alt={`Slide ${index}`} style={{ width: '100%', height: 'auto' }} />
                 </div>
             ))}
         </Slider>

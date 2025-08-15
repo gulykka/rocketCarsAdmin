@@ -3,6 +3,7 @@ import {ICar} from "../interfaces";
 import ColorButton from "./UI/ColorButton";
 import {getOffset, getStatusCode} from "../status";
 import ShadowWindow from "./ShadowWindow";
+import {formatDateToDDMMYYYY} from "../functions/changeDate";
 
 interface CompletedCarCardProps {
     completedCar: ICar
@@ -29,6 +30,7 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                         <span className={'status_completed'}>Статус</span>
                     </span>
                     <span style={{textAlign: 'center'}}>{completedCar.status.description}</span>
+                    <span>{formatDateToDDMMYYYY(completedCar.status.datetime)}</span>
                 </div>
             </div>
             <div className={'photos_container'}>
@@ -38,7 +40,7 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                     }}
                     className={'photo_car'}
                     alt={'car_photo'}
-                    src={completedCar.photos[0].url}/>
+                    src={completedCar.photos[0]}/>
                 <ColorButton>Скачать</ColorButton>
             </div>
             {visibleImageWindow && (

@@ -1,10 +1,30 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ColorButton from "./UI/ColorButton";
 import OperationCarsList from "./OperationCarsList";
 import CompletedCarsList from "./CompletedCarsList";
+import {
+    clearSearchCompletedCars,
+    clearSearchOptionalCars,
+    searchCompletedCars,
+    searchOptionalCars
+} from "../store/slices/carSlice";
+import {useAppDispatch} from "../hooks/redux-hooks";
 
 const CarCompleted = () => {
+    const dispatch = useAppDispatch()
+
     const [textSearch, setTextSearch] = useState('')
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearSearchCompletedCars())
+        };
+    }, [textSearch]);
+
+    function searchCar() {
+        dispatch(searchCompletedCars(textSearch))
+    }
+
     return (
         <>
             <div className={'work_panel_container'}>
@@ -20,7 +40,11 @@ const CarCompleted = () => {
                         placeholder={'Поиск...'}
                         value={textSearch}
                         onChange={(event) => setTextSearch(event.target.value)}/>
-                    <ColorButton>Найти</ColorButton>
+                    <ColorButton
+                        onClick={searchCar}
+                    >
+                        Найти
+                    </ColorButton>
                 </div>
             </div>
             <CompletedCarsList />

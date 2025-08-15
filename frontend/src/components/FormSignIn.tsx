@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import {useAppDispatch, useAppSelector} from "../hooks/redux-hooks";
-import {fetchSignIn} from "../store/slices/carSlice";
+import {fetchSignIn, signIn} from "../store/slices/carSlice";
+import {useNavigate} from "react-router-dom";
 
 const FormSignIn = () => {
     const dispatch = useAppDispatch();
+    const navigation = useNavigate();
 
     const [visibleLogin, setVisibleLogin] = useState(false);
     const [login, setLogin] = useState('');
@@ -14,6 +16,9 @@ const FormSignIn = () => {
     const server_error = useAppSelector(state => state.data.error)
     const status = useAppSelector(state => state.data.status)
 
+    const login_r = useAppSelector(state => state.data.login) //d
+    const password_r = useAppSelector(state => state.data.password) //d
+
     const fetchData = async () => {
         if (!login || !password) {
             setError('Пожалуйста, заполните все поля');
@@ -22,13 +27,21 @@ const FormSignIn = () => {
 
         setError(null);
 
-        try {
-            await dispatch(fetchSignIn({ login, password })).unwrap();
-        } catch {
-            setError(server_error);
-        } finally {
-
+        if (password === password_r && login === login_r) {
+            dispatch(signIn())
+            navigation('/operation')
+        } else {
+            setError('Что-то пошло не так! Попробуйте еще раз.')
         }
+
+
+        // try {
+        //     // await dispatch(fetchSignIn({ login, password })).unwrap(); //v
+        // } catch {
+        //     setError(server_error);
+        // } finally {
+        //
+        // }
     };
 
     return (

@@ -6,7 +6,7 @@ import ChangePassword from "./ChangePassword";
 
 interface ShadowWindowProps {
     onClose: () => void
-    imageSrc?: ICarPhoto[]
+    imageSrc?: string[]
     selectedIndex?: number
 }
 

@@ -5,6 +5,7 @@ from datetime import datetime
 class Status(BaseModel):
     level: int
     description: str
+    datetime: datetime | None
 
 
 class Car(BaseModel):
@@ -14,7 +15,7 @@ class Car(BaseModel):
     year: str | None
     photos: list[str | None] | None
     status: Status
-    datetime: datetime | None
+
 
 
 class Manager(BaseModel):

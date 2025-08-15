@@ -1,27 +1,33 @@
 import React, { useState } from 'react';
+import {useAppDispatch, useAppSelector} from "../hooks/redux-hooks";
+import {fetchSignIn} from "../store/slices/carSlice";
 
 const FormSignIn = () => {
-    const [visibleName, setVisibleName] = useState(false);
-    const [name, setName] = useState('');
-    const [visibleVIN, setVisibleVIN] = useState(false);
-    const [VIN, setVIN] = useState('');
+    const dispatch = useAppDispatch();
+
+    const [visibleLogin, setVisibleLogin] = useState(false);
+    const [login, setLogin] = useState('');
+    const [visiblePassword, setVisiblePassword] = useState(false);
+    const [password, setPassword] = useState('');
+
     const [error, setError] = useState<string | null>(null);
+    const server_error = useAppSelector(state => state.data.error)
+    const status = useAppSelector(state => state.data.status)
 
     const fetchData = async () => {
-        if (!name || !VIN) {
+        if (!login || !password) {
             setError('Пожалуйста, заполните все поля');
             return;
         }
-        // setLoading(true);
+
         setError(null);
 
         try {
-            // await dispatch(fetchGetCar({ name, VIN })).unwrap();
-            // navigation('/main');
+            await dispatch(fetchSignIn({ login, password })).unwrap();
         } catch {
-            setError('Что-то пошло не так...');
+            setError(server_error);
         } finally {
-            // setLoading(false);
+
         }
     };
 
@@ -31,36 +37,36 @@ const FormSignIn = () => {
                 <input
                     type="text"
                     id="myInput"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    onFocus={() => setVisibleName(true)}
-                    onBlur={() => setVisibleName(false)}
+                    value={login}
+                    onChange={(event) => setLogin(event.target.value)}
+                    onFocus={() => setVisibleLogin(true)}
+                    onBlur={() => setVisibleLogin(false)}
                     placeholder=" "
                     // disabled={loading}
                 />
                 <label className="placeholder" htmlFor="myInput">Введите логин</label>
-                {((visibleName) || (name && !visibleName)) && <label className={'background'}>0</label>}
+                {((visibleLogin) || (login && !visibleLogin)) && <label className={'background'}>0</label>}
             </div>
             <div className="input-container">
                 <input
                     type="text"
                     id="mySecondInput"
-                    onFocus={() => setVisibleVIN(true)}
-                    onBlur={() => setVisibleVIN(false)}
-                    value={VIN}
-                    onChange={(event) => setVIN(event.target.value)}
+                    onFocus={() => setVisiblePassword(true)}
+                    onBlur={() => setVisiblePassword(false)}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
                     placeholder=" "
                     // disabled={loading}
                 />
                 <label className="placeholder" htmlFor="mySecondInput">Введите пароль</label>
-                {((visibleVIN) || (VIN && !visibleVIN)) && <label className={'background_VIN'}>0</label>}
+                {((visiblePassword) || (password && !visiblePassword)) && <label className={'background_VIN'}>0</label>}
             </div>
 
             {(error) && <div className="error-message">{error || 'Что-то пошло не так...'}</div>}
             <button
                 onClick={fetchData}
                 className={'button_signin'}
-                // disabled={loading}
+                disabled={status === 'loading'}
             >
                 {'Проверить'}
             </button>

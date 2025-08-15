@@ -1,16 +1,16 @@
 import React, {FC, useState} from 'react';
 import ColorButton from "./UI/ColorButton";
 import {getOffset, getStatusCode} from "../status";
-import {IOperationCar} from "../interfaces";
+import {ICar} from "../interfaces";
 import ShadowWindow from "./ShadowWindow";
 
 interface OperationCarCardProps {
-    operationCar: IOperationCar
+    operationCar: ICar
 }
 
 const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
     const [visibleImageWindow, setVisibleImageWindow] = useState(false);
-    const code = getStatusCode(operationCar.status)
+    const code = operationCar.status.level
     const lenStatus = {
         1: '80px',
         2: '80px',
@@ -48,8 +48,8 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
                     </div>
                     <span
                         className={'status_container'}
-                        style={{marginLeft: getOffset(getStatusCode(operationCar.status))}}>
-                        <span className={'status'}>{operationCar.status}</span>
+                        style={{marginLeft: getOffset(getStatusCode(operationCar.status.description))}}>
+                        <span className={'status'}>{operationCar.status.description}</span>
                     </span>
                 </div>
             </div>

@@ -2,8 +2,11 @@ import React, {useEffect, useState} from 'react';
 import './components.sass'
 import GreyButton from "./UI/GreyButton";
 import {Link, useLocation} from "react-router-dom";
+import {useAppDispatch} from "../hooks/redux-hooks";
+import {signOut} from "../store/slices/carSlice";
 
 const Header = () => {
+    const dispatch = useAppDispatch()
     const [isVisible, setIsVisible] = useState(false)
     const location = useLocation().pathname
 
@@ -18,6 +21,11 @@ const Header = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [isVisible]);
+
+    function SignOut() {
+        dispatch(signOut())
+    }
+
     return (
         <header className={location === '/' ? 'none' : ''}>
             <div className={'navigation'}>
@@ -48,6 +56,7 @@ const Header = () => {
                 </Link>
                 <button
                     title={'Выйти'}
+                    onClick={SignOut}
                     className={'home_button'}>
                     <img
                         className={'out_button_img'}
@@ -85,7 +94,7 @@ const Header = () => {
                     Выданные авто
                 </Link>
                 <Link
-                    onClick={() => setIsVisible(false)}
+                    onClick={SignOut}
                     to={''}
                     className={'popup_menu_link'}>
                     Выйти

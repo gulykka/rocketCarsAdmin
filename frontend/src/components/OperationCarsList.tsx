@@ -1,36 +1,10 @@
 import React from 'react';
 import OperationCarCard from "./OperationCarCard";
-import {IOperationCar} from "../interfaces";
+import {ICar} from "../interfaces";
 
 const OperationCarsList = () => {
 
-    const carsList:IOperationCar[] = [
-        {
-            name: 'Петров Пётр Петрович',
-            VIN: 'LDP91C96XPE203384',
-            auto: 'Voyah Passion',
-            year: '2023',
-            photos:[
-                {
-                    url: 'photos_1.jpg'
-                }
-            ],
-            status: 'На стоянке'
-        },
-        {
-            name: 'Петров Пётр Петрович',
-            VIN: 'LDP91C96XPE203384',
-            auto: 'Voyah Passion',
-            year: '2023',
-            photos: [
-                {
-                   url: 'photos_1.jpg'
-                }
-            ],
-            status: 'На стоянке в Китае'
-        },
-
-    ]
+    const carsList:ICar[] = []
 
     return (
         <div className={'operation_car_container'}>

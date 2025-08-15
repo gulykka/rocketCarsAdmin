@@ -1,11 +1,11 @@
 import React, {FC, useState} from 'react';
-import {ICompletedCar} from "../interfaces";
+import {ICar} from "../interfaces";
 import ColorButton from "./UI/ColorButton";
 import {getOffset, getStatusCode} from "../status";
 import ShadowWindow from "./ShadowWindow";
 
 interface CompletedCarCardProps {
-    completedCar: ICompletedCar
+    completedCar: ICar
 }
 
 const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
@@ -28,7 +28,7 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                         className={'status_completed_container'}>
                         <span className={'status_completed'}>Статус</span>
                     </span>
-                    <span style={{textAlign: 'center'}}>{completedCar.status}</span>
+                    <span style={{textAlign: 'center'}}>{completedCar.status.description}</span>
                 </div>
             </div>
             <div className={'photos_container'}>

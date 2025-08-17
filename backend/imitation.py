@@ -1,10 +1,9 @@
 import json
 import os
 
-import requests
 from fastapi import FastAPI, HTTPException
 from logic import change_pass, sign_in
-from validation import Authorization, Car, CarResponse, ChangePass, Manager, User
+from backend.schemas.admin_validators import Authorization, Car, CarResponse, ChangePass, Manager, User
 
 app = FastAPI()
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_data.json")

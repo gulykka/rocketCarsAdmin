@@ -1,4 +1,4 @@
-from validation import Authorization, ChangePass
+from backend.schemas.admin_validators import Authorization, ChangePass
 
 
 def sign_in(data: Authorization) -> bool:

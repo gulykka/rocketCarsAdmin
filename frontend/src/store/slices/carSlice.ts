@@ -62,7 +62,7 @@ const initialState: IDataState = {
                 }
             },
             {
-                name: "Хз кто это",
+                name: "Сергей Антононович",
                 VIN: "WDDWF8KB0ER123456",
                 auto: "Mercedes",
                 year: "2020",
@@ -74,7 +74,7 @@ const initialState: IDataState = {
                 }
             },
             {
-                name: "Лох Цветочный",
+                name: "Ирина Валерьевна",
                 VIN: "1ZVBP8EM9J5123456",
                 auto: "Ford",
                 year: "2019",
@@ -86,7 +86,7 @@ const initialState: IDataState = {
                 }
             },
             {
-                name: "Лена Головач",
+                name: "Лена Пахомова",
                 VIN: "4T1BF1FKXEU123456",
                 auto: "Toyota",
                 year: "2023",
@@ -98,7 +98,7 @@ const initialState: IDataState = {
                 }
             },
             {
-                name: "Рик",
+                name: "Ричард ДЖеннисон",
                 VIN: "1HGCP2F9XLA123456",
                 auto: "Honda",
                 year: "2022",
@@ -110,7 +110,7 @@ const initialState: IDataState = {
                 }
             },
             {
-                name: "Морти",
+                name: "Марина Ибрагимова",
                 VIN: "WP0AB2A98HS789012",
                 auto: "Porsche",
                 year: "2024",
@@ -122,7 +122,7 @@ const initialState: IDataState = {
                 }
             },
             {
-                name: "Джерри",
+                name: "Николай Соболев",
                 VIN: "2T2BZMCA1JC123456",
                 auto: "Lexus",
                 year: "2021",
@@ -134,7 +134,7 @@ const initialState: IDataState = {
                 }
             },
             {
-                name: "Мистер Жопосранчик",
+                name: "Наталья Гуменюк",
                 VIN: "YV1A22MKXJ2123456",
                 auto: "Volvo",
                 year: "2020",

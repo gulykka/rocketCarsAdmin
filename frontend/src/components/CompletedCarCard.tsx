@@ -16,21 +16,16 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
     return (
         <div className={'completed_car_card_container'}>
             <div className={'information_container'}>
-                <div className={'information_person_container'}>
-                    <span>{completedCar.name}</span>
-                    <span>{completedCar.VIN}</span>
-                </div>
-                <div className={'information_car_container'}>
-                    <span>{completedCar.auto}</span>
-                    <span>{completedCar.year}</span>
-                </div>
+                <span style={{fontSize: '25px'}}>{completedCar.name}</span>
+                <span>{completedCar.VIN}</span>
+                <span>{completedCar.auto}</span>
+                <span>{completedCar.year}</span>
                 <div className={'information_car_completed_status_container'}>
                     <span
                         className={'status_completed_container'}>
-                        <span className={'status_completed'}>Статус</span>
+                        <span className={'status_completed'}>{formatDateToDDMMYYYY(completedCar.status.datetime)}</span>
                     </span>
                     <span style={{textAlign: 'center'}}>{completedCar.status.description}</span>
-                    <span>{formatDateToDDMMYYYY(completedCar.status.datetime)}</span>
                 </div>
             </div>
             <div className={'photos_container'}>

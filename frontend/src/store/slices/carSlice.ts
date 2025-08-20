@@ -14,6 +14,7 @@ export interface IDataState {
     searchOCarBool: boolean
     searchCCars: ICar[] | null
     searchOCars: ICar[] | null
+    sortOrder: 'newest' | 'oldest'
 }
 
 const initialState: IDataState = {
@@ -155,7 +156,9 @@ const initialState: IDataState = {
     searchCCarBool: false,
     searchOCarBool: false,
     searchCCars: null,
-    searchOCars: null
+    searchOCars: null,
+    sortOrder: 'newest',
+
 };
 
 
@@ -245,11 +248,16 @@ const dataSlice = createSlice({
         signIn(state) {
             state.isAuth = true
         },
+        changePassword(state, action) {
+            state.password = action.payload
+        },
         searchOptionalCars(state, action) {
             state.searchOCarBool = true
             const searchTerm = action.payload?.toLowerCase() || '';
             state.searchOCars = state.data?.cars?.filter(car =>
-                car.name.toLowerCase().includes(searchTerm) || car.auto.toLowerCase().includes(searchTerm)
+                car.name.toLowerCase().includes(searchTerm) ||
+                car.auto.toLowerCase().includes(searchTerm) ||
+                car.VIN.toLowerCase().includes(searchTerm)
             ) || null;
         },
         clearSearchOptionalCars(state) {
@@ -260,12 +268,52 @@ const dataSlice = createSlice({
             state.searchCCarBool = true
             const searchTerm = action.payload?.toLowerCase() || '';
             state.searchCCars = state.data?.cars?.filter(car =>
-                car.name.toLowerCase().includes(searchTerm) || car.auto.toLowerCase().includes(searchTerm)
+                car.name.toLowerCase().includes(searchTerm) ||
+                car.auto.toLowerCase().includes(searchTerm) ||
+                car.VIN.toLowerCase().includes(searchTerm)
             ) || null;
         },
         clearSearchCompletedCars(state) {
             state.searchCCars = null
             state.searchCCarBool = false
+        },
+        sortCarsByDate(state, action: { payload: 'newest' | 'oldest' }) {
+            state.sortOrder = action.payload;
+
+            const carsToSort = state.searchCCarBool ? state.searchCCars :
+                state.searchOCarBool ? state.searchOCars :
+                    state.data?.cars;
+
+            if (!carsToSort) return;
+
+            const sortedCars = [...carsToSort].sort((a, b) => {
+                const dateA = new Date(a.status.datetime).getTime();
+                const dateB = new Date(b.status.datetime).getTime();
+
+                return action.payload === 'newest' ? dateB - dateA : dateA - dateB;
+            });
+
+            // Обновляем соответствующий массив
+            if (state.searchCCarBool) {
+                state.searchCCars = sortedCars;
+            } else if (state.searchOCarBool) {
+                state.searchOCars = sortedCars;
+            } else if (state.data) {
+                state.data.cars = sortedCars;
+            }
+        },
+
+// Добавляем редьюсер для применения сортировки при загрузке данных
+        applyDefaultSort(state) {
+            if (!state.data?.cars) return;
+
+            const sortedCars = [...state.data.cars].sort((a, b) => {
+                const dateA = new Date(a.status.datetime).getTime();
+                const dateB = new Date(b.status.datetime).getTime();
+                return dateB - dateA; // newest first
+            });
+
+            state.data.cars = sortedCars;
         }
      },
     extraReducers: (builder) => {
@@ -308,7 +356,8 @@ const dataSlice = createSlice({
 
 export const { signOut, deleteServerMessage, setServer,
     signIn, searchOptionalCars, clearSearchOptionalCars,
-    clearSearchCompletedCars, searchCompletedCars,
+    clearSearchCompletedCars, searchCompletedCars, changePassword,
+    sortCarsByDate, applyDefaultSort
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

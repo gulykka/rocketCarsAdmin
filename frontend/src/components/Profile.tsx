@@ -33,14 +33,14 @@ const Profile = () => {
     return (
         <div className={'profile_container'}>
             <div className={'informations_person_container'}>
-                <span>{user?.name}</span>
+                <span style={{fontSize: '25px'}}>{user?.name}</span>
                 <span>Количество выданных машин: {count_completed_cars}</span>
                 <span>Количество машин в работе: {count_optional_cars}</span>
                 <div className={'change_password_container'}>
-                    <span>Ваш личный менеджер:</span>
                     <div className={'info'}>
+                        <span>Ваш личный менеджер:</span>
                         <span>{manager?.name}</span>
-                        <img src={'whatsapp.png'} className={'whatsapp'}/>
+                        <ColorButton onClick={() => {}}>What`s app</ColorButton>
                     </div>
                 </div>
             </div>

@@ -4,6 +4,8 @@ import GreyButton from "./UI/GreyButton";
 import {Link, useLocation} from "react-router-dom";
 import {useAppDispatch} from "../hooks/redux-hooks";
 import {signOut} from "../store/slices/carSlice";
+import InputCompletedCar from "./InputCompletedCar";
+import InputOperationCar from "./InputOperationCar";
 
 const Header = () => {
     const dispatch = useAppDispatch()
@@ -29,7 +31,7 @@ const Header = () => {
     return (
         <header className={location === '/' ? 'none' : ''}>
             <div className={'navigation'}>
-                <img className={'img_logo_mini'} src={'logo.png'}/>
+                <Link to={'/profile'}><img className={'img_logo_mini'} src={'logo.png'}/></Link>
                 <Link
                     className={'navigation_link'}
                     to={'/operation'}>
@@ -40,6 +42,16 @@ const Header = () => {
                     to={'/completed'}>
                     <GreyButton className={location === '/completed' ? 'grey_navigation_link' : ' '}>Выданные авто</GreyButton></Link>
             </div>
+            {location === '/completed' &&
+                <div className={'input_mobile'}>
+                    <InputCompletedCar />
+                </div>
+            }
+            {location === '/operation' &&
+                <div className={'input_mobile'}>
+                    <InputOperationCar />
+                </div>
+            }
             <div className={'navigation'}>
 
                 <Link
@@ -85,13 +97,13 @@ const Header = () => {
                     onClick={() => setIsVisible(false)}
                     to={'/completed'}
                     className={location === '/completed' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
-                    Авто в работе
+                    Выданные  авто
                 </Link>
                 <Link
                     onClick={() => setIsVisible(false)}
                     to={'/operation'}
                     className={location === '/operation' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
-                    Выданные авто
+                    Авто в работе
                 </Link>
                 <Link
                     onClick={SignOut}

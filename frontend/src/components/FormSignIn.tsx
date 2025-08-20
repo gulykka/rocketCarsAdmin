@@ -29,7 +29,7 @@ const FormSignIn = () => {
 
         if (password === password_r && login === login_r) {
             dispatch(signIn())
-            navigation('/operation')
+            navigation('/profile')
         } else {
             setError('Что-то пошло не так! Попробуйте еще раз.')
         }
@@ -81,7 +81,7 @@ const FormSignIn = () => {
                 className={'button_signin'}
                 disabled={status === 'loading'}
             >
-                {'Проверить'}
+                {'Войти'}
             </button>
         </div>
     );

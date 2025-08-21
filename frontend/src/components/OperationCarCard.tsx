@@ -18,9 +18,9 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
         <div className={'operation_car_card_container'}>
             <div className={'information_container_'}>
                 <span style={{fontSize: '25px'}}>{operationCar.name}</span>
-                <span>{operationCar.VIN}</span>
                 <span>{operationCar.auto}</span>
                 <span>{operationCar.year}</span>
+                <span>{operationCar.VIN}</span>
                 <div className={'information_car_status_container'}>
                     <div
                         style={{width: `${currentStatus * 16.7}%`}}

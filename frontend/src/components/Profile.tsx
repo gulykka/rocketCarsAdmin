@@ -36,12 +36,16 @@ const Profile = () => {
                 <span style={{fontSize: '25px'}}>{user?.name}</span>
                 <span>Количество выданных машин: {count_completed_cars}</span>
                 <span>Количество машин в работе: {count_optional_cars}</span>
-                <div className={'change_password_container'}>
-                    <div className={'info'}>
-                        <span>Ваш личный менеджер:</span>
-                        <span>{manager?.name}</span>
-                        <ColorButton onClick={() => {}}>What`s app</ColorButton>
-                    </div>
+                <div className="info">
+                  <span>Ваш личный менеджер:</span>
+                  <span>{manager?.name}</span>
+                  <ColorButton onClick={() => {}}>
+                    <img
+                      src="whatsapp_1.png"
+                      alt="WhatsApp"
+                      style={{ width: '24px', height: '24px', verticalAlign: 'middle' }}
+                    />
+                  </ColorButton>
                 </div>
             </div>
             <ColorButton onClick={() => setVisibleImageWindow(true)}>Задать новый пароль</ColorButton>

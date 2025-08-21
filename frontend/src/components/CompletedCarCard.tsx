@@ -17,9 +17,9 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
         <div className={'completed_car_card_container'}>
             <div className={'information_container'}>
                 <span style={{fontSize: '25px'}}>{completedCar.name}</span>
-                <span>{completedCar.VIN}</span>
                 <span>{completedCar.auto}</span>
                 <span>{completedCar.year}</span>
+                <span>{completedCar.VIN}</span>
                 <div className={'information_car_completed_status_container'}>
                     <span
                         className={'status_completed_container'}>

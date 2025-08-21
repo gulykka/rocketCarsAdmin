@@ -1,7 +1,7 @@
 import React, {use, useState} from 'react';
 import ColorButton from "./UI/ColorButton";
 import {useAppDispatch, useAppSelector} from "../hooks/redux-hooks";
-import {deleteServerMessage, fetchChangePassword, setServer} from "../store/slices/carSlice";
+import {deleteServerMessage, changePassword, setServer} from "../store/slices/carSlice";
 
 const ChangePassword = () => {
     const dispatch = useAppDispatch();
@@ -20,7 +20,7 @@ const ChangePassword = () => {
 
     const login = 'login'
 
-    function changePassword() {
+    function changePasswordFunc() {
         if (!oldPassword || !newPassword || !repeatNewPassword) {
             setError('Пожалуйста, заполните все поля');
             return;
@@ -34,6 +34,7 @@ const ChangePassword = () => {
 
         try {
             // dispatch(fetchChangePassword({oldPassword, login, newPassword}))
+            dispatch(changePassword(newPassword))
             dispatch(setServer())
             setOldPassword('')
             setNewPassword('')
@@ -47,6 +48,7 @@ const ChangePassword = () => {
 
     return (
         <div className={'change_password_window_container'}>
+            <span style={{fontSize: '25px'}}>Смена пароля</span>
             <div className="input-container_">
                 <input
                     className={'change_input'}
@@ -101,7 +103,7 @@ const ChangePassword = () => {
                 <span className={'succeeded'}>{server_message}</span>
             }
             <ColorButton
-                onClick={changePassword}
+                onClick={changePasswordFunc}
                 className={'save'}>Сохранить</ColorButton>
         </div>
     );

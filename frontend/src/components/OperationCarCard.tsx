@@ -11,42 +11,37 @@ interface OperationCarCardProps {
 
 const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
     const [visibleImageWindow, setVisibleImageWindow] = useState(false);
-    const code = operationCar.status.level
-
-
+    const code = operationCar.status.level;
+    const currentStatus = code ?? 0;
 
     return (
         <div className={'operation_car_card_container'}>
             <div className={'information_container_'}>
-                <div className={'information_person_container'}>
-                    <span>{operationCar.name}</span>
-                    <span>{operationCar.VIN}</span>
-                </div>
-                <div className={'information_car_container'}>
-                    <span>{operationCar.auto}</span>
-                    <span>{operationCar.year}</span>
-                </div>
+                <span style={{fontSize: '25px'}}>{operationCar.name}</span>
+                <span>{operationCar.VIN}</span>
+                <span>{operationCar.auto}</span>
+                <span>{operationCar.year}</span>
                 <div className={'information_car_status_container'}>
                     <div
-                        style={{width: `${(code ?? 0) * 16}%`}}
+                        style={{width: `${currentStatus * 16.7}%`}}
                         className="line_progress">
                     </div>
                     <div className="line"></div>
-                    <div
-                        style={{left: `calc(${(code ?? 0) * 16}% - 10px)`}}
-                        className="circle_progress">
-                    </div>
-                    <div
-                        style={{left: `99%`}}
-                        className="circle">
-                    </div>
+
+                    {[1, 2, 3, 4, 5, 6].map((statusNumber) => (
+                        <div
+                            key={statusNumber}
+                            style={{left: `${(statusNumber) * 16.7}%`}}
+                            className={`circle ${statusNumber <= currentStatus ? 'circle_progress' : ''}`}>
+                        </div>
+                    ))}
+
                     <span
-                        className={'status_container'}
-                        style={{marginLeft: getOffset(getStatusCode(operationCar.status.description))}}>
+                        style={{marginLeft: getOffset(getStatusCode(operationCar.status.description))}}
+                        className={'status_container'}>
                         <span className={'status'}>{operationCar.status.description}</span>
                     </span>
                 </div>
-                <span>Дата изменения последнего статуса: {formatDateToDDMMYYYY(operationCar.status.datetime)}</span>
             </div>
             <div className={'photos_container'}>
                 <img

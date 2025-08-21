@@ -1,51 +1,38 @@
-import React, {useEffect, useState} from 'react';
-import ColorButton from "./UI/ColorButton";
-import OperationCarsList from "./OperationCarsList";
-import CompletedCarsList from "./CompletedCarsList";
+import React, {useEffect} from 'react';
 import {
-    clearSearchCompletedCars,
-    clearSearchOptionalCars,
-    searchCompletedCars,
-    searchOptionalCars
+    sortCarsByDate,
+    applyDefaultSort // Добавляем импорт
 } from "../store/slices/carSlice";
-import {useAppDispatch} from "../hooks/redux-hooks";
+import {useAppDispatch, useAppSelector} from "../hooks/redux-hooks";
+import InputCompletedCar from "./InputCompletedCar";
+import CompletedCarsList from "./CompletedCarsList";
 
 const CarCompleted = () => {
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
+    const sortOrder = useAppSelector(state => state.data.sortOrder);
 
-    const [textSearch, setTextSearch] = useState('')
-
+    // Применяем сортировку по умолчанию при монтировании компонента
     useEffect(() => {
-        return () => {
-            dispatch(clearSearchCompletedCars())
-        };
-    }, [textSearch]);
+        dispatch(applyDefaultSort());
+    }, [dispatch]);
 
-    function searchCar() {
-        dispatch(searchCompletedCars(textSearch))
-    }
+    const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = event.target.value;
+        if (value === 'newest' || value === 'oldest') {
+            dispatch(sortCarsByDate(value));
+        }
+    };
 
     return (
         <>
             <div className={'work_panel_container'}>
                 <div className={'sort_container'}>
-                    <select>
-                        <option>Сортировать по</option>
-                        <option>дате выдачи</option>
+                    <select value={sortOrder} onChange={handleSortChange}>
+                        <option value="newest">От новых к старым</option>
+                        <option value="oldest">От старых к новым</option>
                     </select>
                 </div>
-                <div className={'search_container'}>
-                    <input
-                        className={'input_search'}
-                        placeholder={'Поиск...'}
-                        value={textSearch}
-                        onChange={(event) => setTextSearch(event.target.value)}/>
-                    <ColorButton
-                        onClick={searchCar}
-                    >
-                        Найти
-                    </ColorButton>
-                </div>
+                <div className={'input_desktop'}><InputCompletedCar /></div>
             </div>
             <CompletedCarsList />
         </>

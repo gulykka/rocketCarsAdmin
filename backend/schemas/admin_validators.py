@@ -2,6 +2,11 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
+class LoginRequest(BaseModel):
+    login: str
+    password: str
+
+
 class Status(BaseModel):
     level: int
     description: str
@@ -17,7 +22,6 @@ class Car(BaseModel):
     status: Status
 
 
-
 class Manager(BaseModel):
     name: str
     number: str
@@ -25,6 +29,9 @@ class Manager(BaseModel):
 
 class User(BaseModel):
     name: str
+    login: str
+    password: str
+    manager_id: int | str
 
 
 class Authorization(BaseModel):

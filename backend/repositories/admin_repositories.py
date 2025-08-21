@@ -13,7 +13,7 @@ class BitrixRepository:
     def __init__(self, WEBHOOK_URL: str) -> None:
         self.bitrix = Bitrix(WEBHOOK_URL)
 
-    async def get_contact_by_login(self, login):
+    async def get_contact_by_login(self, login) -> dict | None:
         logger.info(f"Attempt to login with login: {login}")
         contacts = await self.bitrix.get_all(
             'crm.contact.list',
@@ -35,7 +35,6 @@ class BitrixRepository:
         if not contacts:
             logger.warning(f"No contact found for {login}")
             return None
-        print(contacts)
         return contacts
 
     async def get_manager_by_id(self, agent_id: str | int):
@@ -82,13 +81,13 @@ class BitrixRepository:
     async def get_loading_photos_by_car_id(self, parent_id: str | int):
         deal_id = parent_id
         if not deal_id:
+            logger.warning(f"Not fount parent_ID with {parent_id}")
             return []
 
         deal_response = await self.bitrix.call('crm.deal.get', {'id': deal_id})
         if not deal_response:
             logger.warning(f"Сделка с ID {deal_id} не найдена.")
             return []
-        print(deal_response)
         loading_id = deal_response.get('UF_CRM_1733760504')
         if not loading_id:
             logger.info(f"Поле UF_CRM_1733760504 (ID погрузки) пусто для сделки {deal_id}.")
@@ -114,19 +113,15 @@ class BitrixRepository:
             return []
 
     async def update_contact_pass(self, new_pass, contact_id):
-        result = await self.bitrix.call('crm.contact.update', {
-            'id': contact_id,
-            'fields': {
-                'UF_CRM_1753788329': new_pass
-            }
-        })
-        logger.info(f"Пароль для контакта ID={contact_id} успешно обновлён.")
-        return {
-            'success': True,
-            'contact_id': contact_id,
-            'message': 'Пароль успешно изменён'
-        }
+        try:
+            result = await self.bitrix.call('crm.contact.update', {
+                'id': contact_id,
+                'fields': {
+                    'UF_CRM_1753788329': new_pass
+                }
+            })
+            logger.info(f"Пароль для контакта ID={contact_id} успешно обновлён.")
+            return True
+        except Exception as e:
+            return False
 
-
-repo = BitrixRepository(WEBHOOK_URL)
-asyncio.run(repo.get_loading_photos_by_car_id(1060))

@@ -48,7 +48,7 @@ const Profile = () => {
                   </ColorButton>
                 </div>
             </div>
-            <ColorButton onClick={() => setVisibleImageWindow(true)}>Задать новый пароль</ColorButton>
+            <ColorButton onClick={() => setVisibleImageWindow(true)}>Сменить пароль</ColorButton>
             {visibleImageWindow && (
                 <ShadowWindow
                     onClose={() => setVisibleImageWindow(false)}

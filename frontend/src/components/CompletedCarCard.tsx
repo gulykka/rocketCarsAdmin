@@ -28,12 +28,41 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                 throw new Error('Не удалось создать папку в архиве');
             }
 
-            // Создаем промисы для загрузки всех изображений
-            const downloadPromises = completedCar.photos.map(async (photoUrl, index) => {
-                try {
-                    // Добавляем timestamp для избежания кеширования
-                    const urlWithTimestamp = `${photoUrl}?t=${Date.now()}`;
+            // Шаг 1: Собираем все URL фото (сначала из completedCar.photos)
+            let allPhotoUrls = [...completedCar.photos];
 
+            // Шаг 2: Загружаем дополнительные фото с сервера
+            try {
+                const response = await fetch(`http://localhost:5000/api/load-photos/${completedCar.parent_id}/${completedCar.id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                // console.log()
+                if (response.ok) {
+                    const photosData = await response.json();
+                    console.log(photosData.photos)
+                    if (photosData?.photos && Array.isArray(photosData.photos)) {
+                        allPhotoUrls = [...allPhotoUrls, ...photosData.photos];
+                    }
+                } else {
+                    console.warn('Не удалось загрузить дополнительные фото, продолжаем с имеющимися');
+                }
+            } catch (error) {
+                console.warn('Ошибка при загрузке дополнительных фото, используем только локальные', error);
+                // Продолжаем с теми, что уже есть
+            }
+
+            if (allPhotoUrls.length === 0) {
+                alert('Нет фотографий для скачивания');
+                return;
+            }
+
+            // Шаг 3: Загружаем все фото (старые + новые) в архив
+            const downloadPromises = allPhotoUrls.map(async (photoUrl, index) => {
+                try {
+                    const urlWithTimestamp = `${photoUrl}?t=${Date.now()}`;
                     const response = await fetch(urlWithTimestamp, {
                         mode: 'cors',
                         credentials: 'omit',
@@ -48,19 +77,16 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
 
                     const blob = await response.blob();
 
-                    // Проверяем, что это действительно изображение
                     if (!blob.type.startsWith('image/')) {
                         throw new Error('Получен не изображение');
                     }
 
-                    // Определяем расширение из MIME type или URL
                     let extension = 'jpg';
                     if (blob.type === 'image/jpeg') extension = 'jpg';
                     else if (blob.type === 'image/png') extension = 'png';
                     else if (blob.type === 'image/gif') extension = 'gif';
                     else if (blob.type === 'image/webp') extension = 'webp';
                     else {
-                        // Пытаемся получить расширение из URL
                         const urlExtension = photoUrl.split('.').pop()?.toLowerCase();
                         if (urlExtension && ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(urlExtension)) {
                             extension = urlExtension;
@@ -77,13 +103,10 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                 }
             });
 
-            // Ждем завершения всех загрузок
             const results = await Promise.all(downloadPromises);
-
-            // Проверяем результаты
             const failedDownloads = results.filter(result => !result.success);
 
-            if (failedDownloads.length === completedCar.photos.length) {
+            if (failedDownloads.length === allPhotoUrls.length) {
                 throw new Error('Не удалось загрузить ни одного фото');
             }
 
@@ -91,7 +114,7 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                 console.warn(`Не удалось загрузить ${failedDownloads.length} фото`);
             }
 
-            // Генерируем и скачиваем архив
+            // Генерация архива
             const content = await zip.generateAsync({
                 type: 'blob',
                 compression: 'DEFLATE',
@@ -100,31 +123,17 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                 }
             });
 
-            // Создаем понятное имя файла
             const safeCarName = completedCar.name.replace(/[^a-zA-Z0-9а-яА-Я\s]/g, '').trim();
-            const newData = new Date()
-            const zipFilename = `${safeCarName}_${completedCar.auto}_photos_${formatDateToDDMMYYYY(newData.toString()).replace(/\./g, '-')}.zip`;
+            const zipFilename = `${safeCarName}_${completedCar.auto}_photos_${formatDateToDDMMYYYY(new Date().toString()).replace(/\./g, '-')}.zip`;
 
             saveAs(content, zipFilename);
 
-
-
         } catch (error) {
             console.error('Ошибка при создании архива:', error);
-            alert('Произошла ошибка при скачивании фотографий. Проверьте консоль для подробностей.');
+            alert('Произошла ошибка при скачивании фотографий.');
         } finally {
             setIsDownloading(false);
         }
-    };
-
-    // Функция для проверки доступности изображения
-    const testImageLoad = (url: string): Promise<boolean> => {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
-            img.src = url;
-        });
     };
 
     async function getPhotos() {
@@ -139,12 +148,14 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
             })
 
             const photosData = await response.json()
+            console.log(photosData)
             setNewPhotos(photosData.photos)
             setVisibleImageWindow(true)
             setLoading(false)
             if (!response.ok || photosData.status_code !== 200) {
                 return new Error('Не удалось получить фотографии');
             } else {
+                console.log(0)
 
             }
         } catch (e: any) {

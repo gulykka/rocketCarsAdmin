@@ -16,6 +16,8 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
     const [isDownloading, setIsDownloading] = useState(false);
     const code = operationCar.status.level;
     const currentStatus = code ?? 0;
+    const [newPhotos, setNewPhotos] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const downloadPhotosAsZip = async () => {
         setIsDownloading(true);
@@ -115,6 +117,30 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
         }
     };
 
+    async function getPhotos() {
+        try {
+            setLoading(true)
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const response = await fetch(`http://localhost:5000/api/load-photos/${operationCar.parent_id}/${operationCar.id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+
+            const photosData = await response.json()
+            setNewPhotos(photosData.photos)
+            setVisibleImageWindow(true)
+            setLoading(false)
+            if (!response.ok || photosData.status_code !== 200) {
+                return new Error('Не удалось получить фотографии');
+            } else {
+            }
+        } catch (e: any) {
+
+        }
+    }
+
     return (
         <div className={'operation_car_card_container'}>
             <div className={'information_container_'}>
@@ -145,11 +171,10 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
                 </div>
             </div>
             <div className={'photos_container'}>
+                {loading && <span className={'title_loading'}>загрузка...</span>}
                 <img
-                    onClick={() => {
-                        setVisibleImageWindow(true);
-                    }}
-                    className={'photo_car'}
+                    onClick={getPhotos}
+                    className={loading ? 'loading photo_car' : 'photo_car'}
                     alt={'car_photo'}
                     src={operationCar.photos[0]}
                     onError={(e) => {
@@ -167,7 +192,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
             </div>
             {visibleImageWindow && (
                 <ShadowWindow
-                    imageSrc={operationCar.photos}
+                    imageSrc={[...operationCar.photos, ...newPhotos]}
                     onClose={() => setVisibleImageWindow(false)}
                 />
             )}

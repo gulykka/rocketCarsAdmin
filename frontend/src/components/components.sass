@@ -115,9 +115,15 @@ select
   border-radius: 16px
 
 .photos_container
+  position: relative
   @include default_container(column, 10px, 10px)
   width: 300px
-
+.loading
+  opacity: 0.5
+.title_loading
+  position: absolute
+  top: 40%
+  left: 40%
 @media (max-width: 850px)
   .photos_container
     width: 100%

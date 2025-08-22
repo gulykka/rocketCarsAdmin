@@ -16,6 +16,7 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
     const [visibleImageWindow, setVisibleImageWindow] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [newPhotos, setNewPhotos] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const downloadPhotosAsZip = async () => {
         setIsDownloading(true);
@@ -128,6 +129,7 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
 
     async function getPhotos() {
         try {
+            setLoading(true)
             await new Promise(resolve => setTimeout(resolve, 1000));
             const response = await fetch(`http://localhost:5000/api/load-photos/${completedCar.parent_id}/${completedCar.id}`, {
                 method: 'GET',
@@ -137,12 +139,13 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
             })
 
             const photosData = await response.json()
-            console.log(photosData)
-
+            setNewPhotos(photosData.photos)
+            setVisibleImageWindow(true)
+            setLoading(false)
             if (!response.ok || photosData.status_code !== 200) {
                 return new Error('Не удалось получить фотографии');
             } else {
-                setNewPhotos(photosData)
+
             }
         } catch (e: any) {
 
@@ -166,9 +169,10 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                 </div>
             </div>
             <div className={'photos_container'}>
+                {loading && <span className={'title_loading'}>загрузка...</span>}
                 <img
-                    onClick={() => setVisibleImageWindow(true)}
-                    className={'photo_car'}
+                    onClick={getPhotos}
+                    className={loading ? 'photo_car loading' : 'photo_car'}
                     alt={'car_photo'}
                     src={completedCar.photos[0]}
                     onError={(e) => {

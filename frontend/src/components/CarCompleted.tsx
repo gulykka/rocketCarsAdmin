@@ -27,9 +27,10 @@ const CarCompleted = () => {
         <>
             <div className={'work_panel_container'}>
                 <div className={'sort_container'}>
+                    Сортировка по дате:
                     <select value={sortOrder} onChange={handleSortChange}>
-                        <option value="newest">От новых к старым</option>
-                        <option value="oldest">От старых к новым</option>
+                        <option value="newest">сначала новые</option>
+                        <option value="oldest">сначала старые</option>
                     </select>
                 </div>
                 <div className={'input_desktop'}><InputCompletedCar /></div>

@@ -3,13 +3,27 @@ import os
 
 from fastapi import FastAPI, HTTPException
 from logic import change_pass, sign_in
-from backend.schemas.admin_validators import Authorization, Car, CarResponse, ChangePass, Manager, User
+from schemas.admin_validators import Authorization, Car, CarResponse, ChangePass, Manager, User
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_data.json")
 
-test_user = User(name="Агентский Агент Агентович")
+test_user = User(name="Агентский Агент Агентович", id=1234567)
 test_manager = Manager(name="Манагер", number="88005553535")
+
+
+@app.get("/api/health-check/{log}/{pswd}/")
+async def cheack_health(log, pswd):
+    return {"detail": "sosatt"}
 
 
 @app.post("/api/login", response_model=CarResponse | list)
@@ -22,17 +36,19 @@ async def read_root(data: Authorization):
         for car in cars_data:
             car["photos"] = ["https://placedog.net/500" for i in range(3)]
         cars = [Car(**car) for car in cars_data]
-        completed_cars = [car for car in cars if car.status.level == 6]
-        worked_cars = [car for car in cars if not car.status.level == 6]
         return CarResponse(
-			user=test_user,
-			manager=test_manager,
-			operation_cars=worked_cars,
-			completed_cars=completed_cars,
-		)
+            user=test_user,
+            manager=test_manager,
+            cars=cars,
+        )
 
 
 @app.post("/api/change-pass/")
 async def change(data: ChangePass):
     if not change_pass(data):
         return {"detail": "Ты лох, как можно так было. Пароли не совпадают"}
+
+
+@app.get("/api/load-photos/")
+async def change(data: ChangePass):
+    return {"detail": "Ты лох"}

@@ -5,12 +5,14 @@ export interface IStatus {
 }
 
 export interface ICar{
+    id: number | string,
+    parent_id: number | string | null,
     name: string,
     VIN: string,
     auto: string,
     year: string,
     photos: string[],
-    status: IStatus
+    status: IStatus,
 }
 
 export interface ICarPhoto {
@@ -23,6 +25,7 @@ export interface IManager {
 }
 
 export interface IUser {
+    id: number
     name: string
 }
 

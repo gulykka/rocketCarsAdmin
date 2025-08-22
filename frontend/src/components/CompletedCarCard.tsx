@@ -15,6 +15,7 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
     const [chosenPhoto, setChosenPhoto] = useState(0);
     const [visibleImageWindow, setVisibleImageWindow] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [newPhotos, setNewPhotos] = useState([])
 
     const downloadPhotosAsZip = async () => {
         setIsDownloading(true);
@@ -22,29 +23,131 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
             const zip = new JSZip();
             const imgFolder = zip.folder(`${completedCar.name}_photos`);
 
-            // Добавляем каждое фото в архив
-            for (let i = 0; i < completedCar.photos.length; i++) {
-                const photoUrl = completedCar.photos[i];
-                const response = await fetch(photoUrl);
-                const blob = await response.blob();
+            if (!imgFolder) {
+                throw new Error('Не удалось создать папку в архиве');
+            }
 
-                // Получаем расширение файла из URL или используем jpg по умолчанию
-                const extension = photoUrl.split('.').pop()?.toLowerCase() || 'jpg';
-                const filename = `photo_${i + 1}.${extension}`;
+            // Создаем промисы для загрузки всех изображений
+            const downloadPromises = completedCar.photos.map(async (photoUrl, index) => {
+                try {
+                    // Добавляем timestamp для избежания кеширования
+                    const urlWithTimestamp = `${photoUrl}?t=${Date.now()}`;
 
-                imgFolder?.file(filename, blob);
+                    const response = await fetch(urlWithTimestamp, {
+                        mode: 'cors',
+                        credentials: 'omit',
+                        headers: {
+                            'Accept': 'image/*',
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const blob = await response.blob();
+
+                    // Проверяем, что это действительно изображение
+                    if (!blob.type.startsWith('image/')) {
+                        throw new Error('Получен не изображение');
+                    }
+
+                    // Определяем расширение из MIME type или URL
+                    let extension = 'jpg';
+                    if (blob.type === 'image/jpeg') extension = 'jpg';
+                    else if (blob.type === 'image/png') extension = 'png';
+                    else if (blob.type === 'image/gif') extension = 'gif';
+                    else if (blob.type === 'image/webp') extension = 'webp';
+                    else {
+                        // Пытаемся получить расширение из URL
+                        const urlExtension = photoUrl.split('.').pop()?.toLowerCase();
+                        if (urlExtension && ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(urlExtension)) {
+                            extension = urlExtension;
+                        }
+                    }
+
+                    const filename = `${completedCar.name}_photo_${index + 1}.${extension}`;
+                    imgFolder.file(filename, blob);
+
+                    return { success: true, index };
+                } catch (error) {
+                    console.error(`Ошибка загрузки фото ${index + 1}:`, error);
+                    return { success: false, index, error };
+                }
+            });
+
+            // Ждем завершения всех загрузок
+            const results = await Promise.all(downloadPromises);
+
+            // Проверяем результаты
+            const failedDownloads = results.filter(result => !result.success);
+
+            if (failedDownloads.length === completedCar.photos.length) {
+                throw new Error('Не удалось загрузить ни одного фото');
+            }
+
+            if (failedDownloads.length > 0) {
+                console.warn(`Не удалось загрузить ${failedDownloads.length} фото`);
             }
 
             // Генерируем и скачиваем архив
-            const content = await zip.generateAsync({type: 'blob'});
-            saveAs(content, `${completedCar.name}_photos.zip`);
+            const content = await zip.generateAsync({
+                type: 'blob',
+                compression: 'DEFLATE',
+                compressionOptions: {
+                    level: 6
+                }
+            });
+
+            // Создаем понятное имя файла
+            const safeCarName = completedCar.name.replace(/[^a-zA-Z0-9а-яА-Я\s]/g, '').trim();
+            const newData = new Date()
+            const zipFilename = `${safeCarName}_${completedCar.auto}_photos_${formatDateToDDMMYYYY(newData.toString()).replace(/\./g, '-')}.zip`;
+
+            saveAs(content, zipFilename);
+
+
+
         } catch (error) {
             console.error('Ошибка при создании архива:', error);
-            alert('Произошла ошибка при скачивании фотографий');
+            alert('Произошла ошибка при скачивании фотографий. Проверьте консоль для подробностей.');
         } finally {
             setIsDownloading(false);
         }
     };
+
+    // Функция для проверки доступности изображения
+    const testImageLoad = (url: string): Promise<boolean> => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+        });
+    };
+
+    async function getPhotos() {
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const response = await fetch(`http://localhost:5000/api/load-photos/${completedCar.parent_id}/${completedCar.id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+
+            const photosData = await response.json()
+            console.log(photosData)
+
+            if (!response.ok || photosData.status_code !== 200) {
+                return new Error('Не удалось получить фотографии');
+            } else {
+                setNewPhotos(photosData)
+            }
+        } catch (e: any) {
+
+        }
+    }
 
     return (
         <div className={'completed_car_card_container'}>
@@ -54,32 +157,37 @@ const CompletedCarCard:FC<CompletedCarCardProps> = ({completedCar}) => {
                 <span>{completedCar.year}</span>
                 <span>{completedCar.VIN}</span>
                 <div className={'information_car_completed_status_container'}>
-                    <span
-                        className={'status_completed_container'}>
-                        <span className={'status_completed'}>{formatDateToDDMMYYYY(completedCar.status.datetime)}</span>
+                    <span className={'status_completed_container'}>
+                        <span className={'status_completed'}>
+                            {formatDateToDDMMYYYY(completedCar.status.datetime)}
+                        </span>
                     </span>
                     <span style={{textAlign: 'center'}}>{completedCar.status.description}</span>
                 </div>
             </div>
             <div className={'photos_container'}>
                 <img
-                    onClick={() => {
-                        setVisibleImageWindow(true);
-                    }}
+                    onClick={() => setVisibleImageWindow(true)}
                     className={'photo_car'}
                     alt={'car_photo'}
-                    src={completedCar.photos[0]}/>
+                    src={completedCar.photos[0]}
+                    onError={(e) => {
+                        // Запасное изображение если фото не загружается
+                        e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjM1ZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+                    }}
+                />
                 <ColorButton
                     onClick={downloadPhotosAsZip}
-                    disabled={isDownloading}
+                    disabled={isDownloading || completedCar.photos.length === 0}
+                    title={completedCar.photos.length === 0 ? 'Нет фото для скачивания' : ''}
                 >
-                    {isDownloading ? 'Скачивание...' : 'Скачать'}
+                    {isDownloading ? 'Скачивание...' : `Скачать`}
                 </ColorButton>
             </div>
             {visibleImageWindow && (
                 <ShadowWindow
                     selectedIndex={chosenPhoto}
-                    imageSrc={completedCar.photos}
+                    imageSrc={[...completedCar.photos, ...newPhotos]}
                     onClose={() => setVisibleImageWindow(false)}
                 />
             )}

@@ -13,9 +13,15 @@
 
 header
   background: #181A19
+  position: fixed
+  top: 0
+  z-index: 10
+  height: 50px
+  left: 0
+  right: 0
   @include default_container(row, 10px, 10px)
   justify-content: space-between
-  padding: 30px 50px
+  padding: 40px 50px
 .navigation
   @include default_container(row, 0px, 10px)
 .home_button_img
@@ -47,11 +53,16 @@ header
 
 .work_panel_container
   @include default_container(row, 10px, 10px)
+  position: fixed
+  top: 100px
+  z-index: 20 !important
   justify-content: space-between
   width: 100%
   font-size: 16px
 
-
+@media (max-width: 850px)
+  .work_panel_container
+    position: static
 
 select
   background: #181A19
@@ -60,6 +71,7 @@ select
   color: white
   font-size: 16px
   height: 100%
+  border: none
   //&:focus
   //  border-end-end-radius: 0px
   //  border-end-start-radius: 0px
@@ -81,11 +93,11 @@ select
   .search_container
     @include default_container(row, 10px, 10px)
 .operation_car_container, .completed_cars_list_container
-
   @include default_container(column, 10px, 10px)
+
 @media (max-width: 850px)
   .operation_car_card_container
-    @include default_container(column, 10px, 10px)
+    @include default_container(column, 30px, 10px)
 
 @media (max-width: 650px)
   .search_container
@@ -118,7 +130,7 @@ select
   padding: 35px
   color: white
   display: grid
-  gap: 20px
+  column-gap: 50px
   grid-template-columns: 3fr 1fr
 
 @media (max-width: 750px)
@@ -325,7 +337,7 @@ select
   right: 0
   bottom: 0
   background-color: rgba(0, 0, 0, 0.8)
-  z-index: 1004
+  z-index: 1004 !important
 .overlay_
   position: fixed
   top: 0
@@ -567,6 +579,10 @@ option
   font-size: 14px
 select
   font-size: 14px
+  color: #F08319
+  &:focus-visible
+    border: none
+  -webkit-tap-highlight-color: transparent
 
 footer
   height: 167px
@@ -574,5 +590,9 @@ footer
   display: flex
   position: fixed
   bottom: 0
-  z-index: 0
+  z-index: -1
   width: 100%
+
+.sort_container
+  font-size: 14px
+  color: #D9D9D9

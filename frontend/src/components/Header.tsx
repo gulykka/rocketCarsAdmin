@@ -95,7 +95,7 @@ const Header = () => {
                     onClick={() => setIsVisible(false)}
                     to={'/profile'}
                     className={location === '/profile' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
-                    Личный кабинет
+                    Главная
                 </Link>
                 <Link
                     onClick={() => setIsVisible(false)}

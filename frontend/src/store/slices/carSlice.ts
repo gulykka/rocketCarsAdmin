@@ -30,135 +30,7 @@ export interface IDataState {
 
 const initialState: IDataState = {
     isAuth: true,
-    data: {
-        user: { name: 'Иванов Иван Иванович' },
-        manager: {
-            name: 'Петров Пётр Петрович',
-            number: '79142147067'
-        },
-        cars: [
-            {
-                name: "Ваня",
-                VIN: "5YJSA1E14GF123456",
-                auto: "Tesla",
-                year: "2023",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 6,
-                    description: "Авто выдан",
-                    datetime: "2024-04-01T09:15:30"
-                }
-            },
-            {
-                name: "Паша",
-                VIN: "5UXCR6C5XJ9A12345",
-                auto: "BMW",
-                year: "2022",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 6,
-                    description: "Авто выдан",
-                    datetime: "2024-04-03T14:22:10"
-                }
-            },
-            {
-                name: "Глаша A6",
-                VIN: "WAUAFDF58HN012345",
-                auto: "Audi",
-                year: "2021",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 1,
-                    description: "На оплате/на заводе",
-                    datetime: "2024-04-05T11:45:00"
-                }
-            },
-            {
-                name: "Сергей Антононович",
-                VIN: "WDDWF8KB0ER123456",
-                auto: "Mercedes",
-                year: "2020",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 2,
-                    description: "На стоянке в Китае",
-                    datetime: "2024-04-06T16:30:45"
-                }
-            },
-            {
-                name: "Ирина Валерьевна",
-                VIN: "1ZVBP8EM9J5123456",
-                auto: "Ford",
-                year: "2019",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 1,
-                    description: "На оплате/на заводе",
-                    datetime: "2024-04-07T08:10:20"
-                }
-            },
-            {
-                name: "Лена Пахомова",
-                VIN: "4T1BF1FKXEU123456",
-                auto: "Toyota",
-                year: "2023",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 4,
-                    description: "На СВХ",
-                    datetime: "2024-04-09T13:55:15"
-                }
-            },
-            {
-                name: "Ричард ДЖеннисон",
-                VIN: "1HGCP2F9XLA123456",
-                auto: "Honda",
-                year: "2022",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 3,
-                    description: "Доставка в РФ",
-                    datetime: "2024-04-11T17:05:33"
-                }
-            },
-            {
-                name: "Марина Ибрагимова",
-                VIN: "WP0AB2A98HS789012",
-                auto: "Porsche",
-                year: "2024",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 1,
-                    description: "На оплате/на заводе",
-                    datetime: "2024-04-13T10:40:12"
-                }
-            },
-            {
-                name: "Николай Соболев",
-                VIN: "2T2BZMCA1JC123456",
-                auto: "Lexus",
-                year: "2021",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 2,
-                    description: "На стоянке в Китае",
-                    datetime: "2024-04-15T12:25:50"
-                }
-            },
-            {
-                name: "Наталья Гуменюк",
-                VIN: "YV1A22MKXJ2123456",
-                auto: "Volvo",
-                year: "2020",
-                photos: ['photos_1.jpg', 'photos_2.jpg'],
-                status: {
-                    level: 6,
-                    description: "Авто выдан",
-                    datetime: "2024-04-17T18:00:00"
-                }
-            }
-        ]
-    },
+    data: null,
     error: null,
     status: null,
     server_message: null,
@@ -184,14 +56,13 @@ const initialState: IDataState = {
         totalPages: 1,
     },
 };
-
 export const fetchSignIn = createAsyncThunk(
     'dataSlice/fetchSignIn',
     async ({ login, password }: { login: string, password: string }, thunkAPI) => {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const response = await fetch('/api/login/', {
+            const response = await fetch('http://localhost:5000/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -201,15 +72,17 @@ export const fetchSignIn = createAsyncThunk(
                     password
                 }),
             });
+            // console.log(response)
 
-            const data = await response.json();
-            if (!response.ok || data.status_code !== 200) {
-                return thunkAPI.rejectWithValue('Ошибка авторизации.');
+            const data = await response.json()
+
+            if (!response.ok) {
+                return thunkAPI.rejectWithValue(data.message || 'Ошибка авторизации');
             }
-
-            return data.data;
+            return data
         } catch (e: any) {
-            return thunkAPI.rejectWithValue('Ошибка авторизации.');
+            console.log('Fetch error:', e);
+            return thunkAPI.rejectWithValue('Ошибка соединения с сервером');
         }
     }
 );
@@ -244,6 +117,33 @@ export const fetchChangePassword = createAsyncThunk(
         }
     }
 );
+
+// export const fetchGetPhotosCar = createAsyncThunk(
+//     'dataSlice/fetchGetPhotosCar',
+//     async ({carId, parentId} : {carId: string | number, parentId: string | number}, thunkAPI) => {
+//         try {
+//             await new Promise(resolve => setTimeout(resolve, 1000));
+//
+//             const response = await fetch(`http://localhost:5000/api/load-photos/${parentId}/${carId}`, {
+//                 method: 'GET',
+//                 headers: {
+//                     'Content-Type': 'application/json'
+//                 }
+//             });
+//             const photosData = await response.json()
+//
+//             if (!response.ok || photosData.status_code !== 200) {
+//                 return thunkAPI.rejectWithValue('Не удалось получить фотографии');
+//             } else {
+//                 return photosData
+//             }
+//
+//         } catch (e: any) {
+//             return thunkAPI.rejectWithValue('Не удалось получить фотографии')
+//         }
+//
+//     }
+// )
 
 const dataSlice = createSlice({
     name: 'data',
@@ -475,6 +375,7 @@ const dataSlice = createSlice({
                 state.error = null;
                 state.data = action.payload;
                 state.isAuth = true;
+                console.log(action.payload)
 
                 // Обновление пагинации после загрузки данных
                 state.completedCarsPagination.currentPage = 1;
@@ -492,6 +393,7 @@ const dataSlice = createSlice({
                     totalOperationCars / state.operationCarsPagination.itemsPerPage
                 );
             })
+
             .addCase(fetchSignIn.pending, (state) => {
                 state.status = 'loading';
             })

@@ -17,13 +17,13 @@ class Car(BaseModel):
     status: Status
 
 
-
 class Manager(BaseModel):
     name: str
     number: str
 
 
 class User(BaseModel):
+    id: int
     name: str
 
 
@@ -41,5 +41,4 @@ class ChangePass(BaseModel):
 class CarResponse(BaseModel):
     user: User
     manager: Manager
-    completed_cars: list[Car]
-    operation_cars: list[Car]
+    cars: list[Car]

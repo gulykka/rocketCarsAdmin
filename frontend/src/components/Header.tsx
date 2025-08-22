@@ -44,7 +44,7 @@ const Header = () => {
                 <Link
                     className={'navigation_link'}
                     to={'/profile'}>
-                    <GreyButton className={location === '/completed' ? 'grey_navigation_link' : ' '}>Главная</GreyButton></Link>
+                    <GreyButton className={location === '/profile' ? 'grey_navigation_link' : ' '}>Главная</GreyButton></Link>
             </div>
             {location === '/completed' &&
                 <div className={'input_mobile'}>

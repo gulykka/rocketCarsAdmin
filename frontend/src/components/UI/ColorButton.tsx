@@ -4,12 +4,18 @@ interface GreyButtonProps {
     children: React.ReactNode;
     onClick?: () => void
     className?: string
+    disabled?: boolean
+    title?: string
 }
 
 
-const ColorButton: React.FC<GreyButtonProps> = ({ children, onClick, className }) => {
+const ColorButton: React.FC<GreyButtonProps> = ({ children, onClick, disabled, title, className }) => {
     return (
-        <button className={`color_button ${className}`} onClick={onClick}>
+        <button
+            disabled={disabled}
+            title={title}
+            className={`color_button ${className}`}
+            onClick={onClick}>
             {children}
         </button>
     );

@@ -89,31 +89,26 @@ export const fetchSignIn = createAsyncThunk(
 
 export const fetchChangePassword = createAsyncThunk(
     'dataSlice/fetchChangePassword',
-    async ({ oldPassword, newPassword, login }: { oldPassword: string, newPassword: string, login: string }, thunkAPI) => {
+    async ({ id, oldPassword, newPassword }: { id: any; oldPassword: string; newPassword: string }, thunkAPI) => {
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            const response = await fetch('/api/change-pass', {
+            const response = await fetch('http://localhost:5000/api/change-password', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    login,
-                    oldPassword,
-                    newPassword
-                }),
+                body: JSON.stringify({ id, oldPassword, newPassword }),
             });
 
             const data = await response.json();
+
             if (!response.ok || data.status_code !== 200) {
-                return thunkAPI.rejectWithValue('Не удалось поменять пароль.');
-            } else {
-                return thunkAPI.fulfillWithValue('Пароль успешно изменен.');
+                return thunkAPI.rejectWithValue(data.message || 'Не удалось изменить пароль');
             }
 
-        } catch (e: any) {
-            return thunkAPI.rejectWithValue('Ошибка авторизации.');
+            // ✅ Возвращаем сообщение об успехе
+            return 'Пароль успешно изменён';
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message || 'Ошибка соединения с сервером');
         }
     }
 );

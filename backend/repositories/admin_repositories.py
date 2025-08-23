@@ -1,6 +1,6 @@
 from fast_bitrix24 import Bitrix
 from fast_bitrix24.server_response import ErrorInServerResponseException
-import asyncio
+
 from loguru import logger
 
 
@@ -73,8 +73,31 @@ class BitrixRepository:
         if not cars:
             logger.warning(f"No found car with agent ID {contact_id}")
             return []
-        print(cars)
         return cars
+
+    async def get_cars_photos(self, contact_id: int | str, car_id):
+        cars = await self.bitrix.get_all(
+            'crm.item.list',
+            {
+                'entityTypeId': 135,
+                'filter': {
+                    'CONTACT_ID': contact_id,
+                    'ID': car_id,
+                },
+                'select': [
+                    'ufCrm8FotoAvto',
+                ]
+            }
+        )
+
+        if not cars:
+            logger.warning(f"No found car with agent ID {contact_id}")
+            return []
+        photos = cars[0].get("ufCrm8FotoAvto", None)
+        if photos is not None and len(photos) > 0:
+            return [car.get("urlMachine", "") for car in cars[0].get("ufCrm8FotoAvto", [])]
+        else:
+            return []
 
     async def get_loading_photos_by_car_id(self, parent_id: str | int):
         deal_id = str(parent_id).strip() if parent_id else ""

@@ -113,31 +113,38 @@ class AdminSerializer:
             number=normalize_phone(manager_bx.get("PERSONAL_MOBILE", ""))
         )
 
-    def serialize_date(date_str: str) -> str:
+    def serialize_date(date_str: str) -> datetime:
         try:
-            parsed_date: datetime = parser.parse(date_str)
-            return parsed_date.strftime("%d.%m.%Y")
+            parsed_date = parser.parse(date_str, fuzzy=True)
+            return parsed_date
         except (ValueError, TypeError, OverflowError) as e:
             return ""
 
     @staticmethod
     def car_to_model(car_bx: dict) -> Car:
+        if car_bx["stageId"] == 'DT135_12:FAIL':
+            return None
         stage_item = AdminSerializer.STAGES[car_bx["stageId"]]
 
         stage_history = car_bx.get('ufCrm8StageHistory')
-
+        cars_photo = car_bx.get("ufCrm8FotoAvto")
         if not stage_history:
             history_dates = []
         elif isinstance(stage_history, list):
-            history_dates = [AdminSerializer.serialize_date(date) for date in stage_history]
+            history_dates = [AdminSerializer.serialize_date(date[:10]) for date in stage_history]
         elif isinstance(stage_history, str):
-            serialized = AdminSerializer.serialize_date(stage_history)
+            serialized = AdminSerializer.serialize_date(stage_history[:10])
             history_dates = [serialized] if serialized else []
         else:
             history_dates = []
+        latest_date = max(history_dates) if history_dates else None
 
+        if latest_date:
+            status_date = latest_date.strftime("%d.%m.%Y")
+        else:
+            status_date = ""
         return Car(
-            id=car_bx.get("ID", ""),
+            id=car_bx.get("id", ""),
             name=car_bx.get('ufCrm8FioKlient', ''),
             VIN=car_bx.get("ufCrm8Vin", ""),
             auto=" ".join([
@@ -145,11 +152,11 @@ class AdminSerializer:
                 car_bx.get('ufCrm8ModelTc', '')
             ]).strip(),
             year=car_bx.get("ufCrm8DataVipuska", ""),
-            photos=car_bx.get("ufCrm8FotoAvto", []) or [],
+            photos=[photo.get("urlMachine", "") for photo in cars_photo],
             status=Status(
                 level=stage_item.get("level") if isinstance(stage_item, dict) else None,
                 description=stage_item.get("description") if isinstance(stage_item, dict) else "",
-                datetime=max(history_dates, default=""),
+                datetime=status_date,
             ),
             parent_id=car_bx.get("parentId2", "")
         )

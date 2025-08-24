@@ -9,7 +9,7 @@ class LoginRequest(BaseModel):
 class Status(BaseModel):
     level: int
     description: str
-    datetime: str | None
+    datetime: str or None
 
 
 class Car(BaseModel):

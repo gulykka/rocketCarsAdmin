@@ -7,3 +7,5 @@ uvicorn==0.35.0
 fast_bitrix24
 loguru
 python-dateutil
+dotenv
+

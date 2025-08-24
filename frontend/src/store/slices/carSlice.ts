@@ -28,34 +28,79 @@ export interface IDataState {
     };
 }
 
+// Функции для работы с localStorage
+const SESSION_KEY = 'car_app_session';
+
+const saveSession = (state: Partial<IDataState>) => {
+    try {
+        const sessionData = {
+            isAuth: state.isAuth,
+            data: state.data,
+            login: state.login,
+            searchCCarBool: state.searchCCarBool,
+            searchOCarBool: state.searchOCarBool,
+            searchCCars: state.searchCCars,
+            searchOCars: state.searchOCars,
+            sortOrder: state.sortOrder,
+            completedCarsPagination: state.completedCarsPagination,
+            operationCarsPagination: state.operationCarsPagination,
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+    } catch (error) {
+        console.error('Error saving session:', error);
+    }
+};
+
+const loadSession = (): Partial<IDataState> => {
+    try {
+        const sessionData = localStorage.getItem(SESSION_KEY);
+        return sessionData ? JSON.parse(sessionData) : {};
+    } catch (error) {
+        console.error('Error loading session:', error);
+        return {};
+    }
+};
+
+const clearSession = () => {
+    try {
+        localStorage.removeItem(SESSION_KEY);
+    } catch (error) {
+        console.error('Error clearing session:', error);
+    }
+};
+
+// Загружаем сохраненную сессию при инициализации
+const savedSession = loadSession();
+
 const initialState: IDataState = {
-    isAuth: true,
-    data: null,
+    isAuth: savedSession.isAuth ?? true,
+    data: savedSession.data ?? null,
     error: null,
     status: null,
     server_message: null,
-    login: 'admin',
-    password: 'pass',
-    searchCCarBool: false,
-    searchOCarBool: false,
-    searchCCars: null,
-    searchOCars: null,
-    sortOrder: 'newest',
+    login: savedSession.login ?? 'admin',
+    password: 'pass', // Не сохраняем пароль в localStorage из соображений безопасности
+    searchCCarBool: savedSession.searchCCarBool ?? false,
+    searchOCarBool: savedSession.searchOCarBool ?? false,
+    searchCCars: savedSession.searchCCars ?? null,
+    searchOCars: savedSession.searchOCars ?? null,
+    sortOrder: savedSession.sortOrder ?? 'newest',
 
     // Пагинация для выданных авто
-    completedCarsPagination: {
+    completedCarsPagination: savedSession.completedCarsPagination ?? {
         currentPage: 1,
         itemsPerPage: 5,
         totalPages: 1,
     },
 
     // Пагинация для авто в работе
-    operationCarsPagination: {
+    operationCarsPagination: savedSession.operationCarsPagination ?? {
         currentPage: 1,
         itemsPerPage: 5,
         totalPages: 1,
     },
 };
+
 export const fetchSignIn = createAsyncThunk(
     'dataSlice/fetchSignIn',
     async ({ login, password }: { login: string, password: string }, thunkAPI) => {
@@ -72,7 +117,6 @@ export const fetchSignIn = createAsyncThunk(
                     password
                 }),
             });
-            // console.log(response)
 
             const data = await response.json()
 
@@ -89,56 +133,32 @@ export const fetchSignIn = createAsyncThunk(
 
 export const fetchChangePassword = createAsyncThunk(
     'dataSlice/fetchChangePassword',
-    async ({ id, oldPassword, newPassword }: { id: any; oldPassword: string; newPassword: string }, thunkAPI) => {
+    async ({ id, old_pass, new_pass}: { id: any; old_pass: string; new_pass: string }, thunkAPI) => {
         try {
-            const response = await fetch('http://localhost:5000/api/change-password', {
+            console.log(typeof id)
+            const response = await fetch('http://localhost:5000/api/change-pass', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id, oldPassword, newPassword }),
+                body: JSON.stringify({ id, old_pass, new_pass }),
             });
 
             const data = await response.json();
+            console.log(data)
 
-            if (!response.ok || data.status_code !== 200) {
+            if (!response.ok) {
+                console.log('!!!!')
                 return thunkAPI.rejectWithValue(data.message || 'Не удалось изменить пароль');
             }
 
-            // ✅ Возвращаем сообщение об успехе
             return 'Пароль успешно изменён';
         } catch (error: any) {
+            console.log(error)
             return thunkAPI.rejectWithValue(error.message || 'Ошибка соединения с сервером');
         }
     }
 );
-
-// export const fetchGetPhotosCar = createAsyncThunk(
-//     'dataSlice/fetchGetPhotosCar',
-//     async ({carId, parentId} : {carId: string | number, parentId: string | number}, thunkAPI) => {
-//         try {
-//             await new Promise(resolve => setTimeout(resolve, 1000));
-//
-//             const response = await fetch(`http://localhost:5000/api/load-photos/${parentId}/${carId}`, {
-//                 method: 'GET',
-//                 headers: {
-//                     'Content-Type': 'application/json'
-//                 }
-//             });
-//             const photosData = await response.json()
-//
-//             if (!response.ok || photosData.status_code !== 200) {
-//                 return thunkAPI.rejectWithValue('Не удалось получить фотографии');
-//             } else {
-//                 return photosData
-//             }
-//
-//         } catch (e: any) {
-//             return thunkAPI.rejectWithValue('Не удалось получить фотографии')
-//         }
-//
-//     }
-// )
 
 const dataSlice = createSlice({
     name: 'data',
@@ -148,60 +168,67 @@ const dataSlice = createSlice({
             state.isAuth = false;
             state.error = null;
             state.status = null;
+            clearSession(); // Очищаем сессию при выходе
         },
 
         deleteServerMessage(state) {
             state.server_message = null;
+            saveSession(state); // Сохраняем состояние
         },
 
         setServer(state) {
             state.server_message = 'Пароль успешно изменен!';
+            saveSession(state); // Сохраняем состояние
         },
 
         signIn(state) {
             state.isAuth = true;
+            saveSession(state); // Сохраняем состояние
         },
 
-        changePassword(state, action) {
-            state.password = action.payload;
-        },
+        // changePassword(state, action) {
+        //     state.password = action.payload;
+        //     // Пароль не сохраняем в localStorage из соображений безопасности
+        // },
 
         searchOptionalCars(state, action) {
             state.searchOCarBool = true;
             const searchTerm = action.payload?.toLowerCase() || '';
             state.searchOCars = state.data?.cars?.filter(car =>
-                car.name.toLowerCase().includes(searchTerm) ||
-                car.auto.toLowerCase().includes(searchTerm) ||
-                car.VIN.toLowerCase().includes(searchTerm)
+                car?.name?.toLowerCase().includes(searchTerm) ||
+                car?.auto?.toLowerCase().includes(searchTerm) ||
+                car?.VIN?.toLowerCase().includes(searchTerm)
             ) || null;
-            // Сброс пагинации для авто в работе при поиске
+
             state.operationCarsPagination.currentPage = 1;
+            saveSession(state); // Сохраняем состояние
         },
 
         clearSearchOptionalCars(state) {
             state.searchOCars = null;
             state.searchOCarBool = false;
-            // Сброс пагинации для авто в работе
             state.operationCarsPagination.currentPage = 1;
+            saveSession(state); // Сохраняем состояние
         },
 
         searchCompletedCars(state, action) {
             state.searchCCarBool = true;
             const searchTerm = action.payload?.toLowerCase() || '';
             state.searchCCars = state.data?.cars?.filter(car =>
-                car.name.toLowerCase().includes(searchTerm) ||
-                car.auto.toLowerCase().includes(searchTerm) ||
-                car.VIN.toLowerCase().includes(searchTerm)
+                car?.name?.toLowerCase().includes(searchTerm) ||
+                car?.auto?.toLowerCase().includes(searchTerm) ||
+                car?.VIN?.toLowerCase().includes(searchTerm)
             ) || null;
-            // Сброс пагинации для выданных авто при поиске
+
             state.completedCarsPagination.currentPage = 1;
+            saveSession(state); // Сохраняем состояние
         },
 
         clearSearchCompletedCars(state) {
             state.searchCCars = null;
             state.searchCCarBool = false;
-            // Сброс пагинации для выданных авто
             state.completedCarsPagination.currentPage = 1;
+            saveSession(state); // Сохраняем состояние
         },
 
         sortCarsByDate(state, action: { payload: 'newest' | 'oldest' }) {
@@ -213,43 +240,89 @@ const dataSlice = createSlice({
 
             if (!carsToSort) return;
 
-            const sortedCars = [...carsToSort].sort((a, b) => {
-                const dateA = new Date(a.status.datetime).getTime();
-                const dateB = new Date(b.status.datetime).getTime();
+            const parseDate = (dateString: string): Date => {
+                // Если дата пустая строка, возвращаем очень старую дату
+                if (!dateString || dateString.trim() === '') {
+                    return new Date(0); // 1 января 1970
+                }
 
+                // Парсим формат DD.MM.YYYY
+                const parts = dateString.split('.');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1; // Месяцы в JS: 0-11
+                    const year = parseInt(parts[2], 10);
+
+                    // Проверяем валидность даты
+                    const date = new Date(year, month, day);
+                    if (!isNaN(date.getTime())) {
+                        return date;
+                    }
+                }
+
+                // Если формат не распознан или дата невалидна
+                return new Date(0);
+            };
+
+            const sortedCars = [...carsToSort].sort((a, b) => {
+                const dateA = parseDate(a.status.datetime).getTime();
+                const dateB = parseDate(b.status.datetime).getTime();
                 return action.payload === 'newest' ? dateB - dateA : dateA - dateB;
             });
 
-            if (state.searchCCarBool) {
+            if (state.searchCCarBool && Array.isArray(state.searchCCars)) {
                 state.searchCCars = sortedCars;
-            } else if (state.searchOCarBool) {
+            } else if (state.searchOCarBool && Array.isArray(state.searchOCars)) {
                 state.searchOCars = sortedCars;
-            } else if (state.data) {
+            } else if (state.data?.cars) {
                 state.data.cars = sortedCars;
             }
 
-            // Сброс пагинации после сортировки
             state.completedCarsPagination.currentPage = 1;
             state.operationCarsPagination.currentPage = 1;
+            saveSession(state);
         },
 
         applyDefaultSort(state) {
             if (!state.data?.cars) return;
 
+            const parseDate = (dateString: string): Date => {
+                // Если дата пустая строка, возвращаем очень старую дату
+                if (!dateString || dateString.trim() === '') {
+                    return new Date(0); // 1 января 1970
+                }
+
+                // Парсим формат DD.MM.YYYY
+                const parts = dateString.split('.');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1; // Месяцы в JS: 0-11
+                    const year = parseInt(parts[2], 10);
+
+                    // Проверяем валидность даты
+                    const date = new Date(year, month, day);
+                    if (!isNaN(date.getTime())) {
+                        return date;
+                    }
+                }
+
+                // Если формат не распознан или дата невалидна
+                return new Date(0);
+            };
+
             const sortedCars = [...state.data.cars].sort((a, b) => {
-                const dateA = new Date(a.status.datetime).getTime();
-                const dateB = new Date(b.status.datetime).getTime();
-                return dateB - dateA;
+                const dateA = parseDate(a.status.datetime).getTime();
+                const dateB = parseDate(b.status.datetime).getTime();
+                return dateB - dateA; // Всегда newest по умолчанию
             });
 
             state.data.cars = sortedCars;
 
-            // Сброс пагинации после применения сортировки по умолчанию
             state.completedCarsPagination.currentPage = 1;
             state.operationCarsPagination.currentPage = 1;
+            saveSession(state);
         },
-
-        // Редьюсеры для пагинации выданных авто
+        // Редьюсеры для пагинации
         setCompletedCarsCurrentPage(state, action: { payload: number }) {
             const totalPages = Math.ceil(
                 (state.searchCCarBool ? state.searchCCars?.length || 0 :
@@ -259,6 +332,7 @@ const dataSlice = createSlice({
 
             if (action.payload >= 1 && action.payload <= totalPages) {
                 state.completedCarsPagination.currentPage = action.payload;
+                saveSession(state); // Сохраняем состояние
             }
         },
 
@@ -266,7 +340,6 @@ const dataSlice = createSlice({
             state.completedCarsPagination.itemsPerPage = action.payload;
             state.completedCarsPagination.currentPage = 1;
 
-            // Пересчет totalPages
             const totalCompletedCars = state.searchCCarBool ?
                 state.searchCCars?.length || 0 :
                 state.data?.cars?.filter(car => car.status.level === 6).length || 0;
@@ -274,6 +347,34 @@ const dataSlice = createSlice({
             state.completedCarsPagination.totalPages = Math.ceil(
                 totalCompletedCars / action.payload
             );
+            saveSession(state); // Сохраняем состояние
+        },
+
+        setOperationCarsCurrentPage(state, action: { payload: number }) {
+            const totalPages = Math.ceil(
+                (state.searchOCarBool ? state.searchOCars?.length || 0 :
+                    state.data?.cars?.filter(car => car.status.level !== 6).length || 0) /
+                state.operationCarsPagination.itemsPerPage
+            );
+
+            if (action.payload >= 1 && action.payload <= totalPages) {
+                state.operationCarsPagination.currentPage = action.payload;
+                saveSession(state); // Сохраняем состояние
+            }
+        },
+
+        setOperationCarsItemsPerPage(state, action: { payload: number }) {
+            state.operationCarsPagination.itemsPerPage = action.payload;
+            state.operationCarsPagination.currentPage = 1;
+
+            const totalOperationCars = state.searchOCarBool ?
+                state.searchOCars?.length || 0 :
+                state.data?.cars?.filter(car => car.status.level !== 6).length || 0;
+
+            state.operationCarsPagination.totalPages = Math.ceil(
+                totalOperationCars / action.payload
+            );
+            saveSession(state); // Сохраняем состояние
         },
 
         updateCompletedCarsTotalPages(state) {
@@ -285,37 +386,10 @@ const dataSlice = createSlice({
                 totalCompletedCars / state.completedCarsPagination.itemsPerPage
             );
 
-            // Корректировка currentPage если он превышает totalPages
             if (state.completedCarsPagination.currentPage > state.completedCarsPagination.totalPages) {
                 state.completedCarsPagination.currentPage = Math.max(1, state.completedCarsPagination.totalPages);
             }
-        },
-
-        // Редьюсеры для пагинации авто в работе
-        setOperationCarsCurrentPage(state, action: { payload: number }) {
-            const totalPages = Math.ceil(
-                (state.searchOCarBool ? state.searchOCars?.length || 0 :
-                    state.data?.cars?.filter(car => car.status.level !== 6).length || 0) /
-                state.operationCarsPagination.itemsPerPage
-            );
-
-            if (action.payload >= 1 && action.payload <= totalPages) {
-                state.operationCarsPagination.currentPage = action.payload;
-            }
-        },
-
-        setOperationCarsItemsPerPage(state, action: { payload: number }) {
-            state.operationCarsPagination.itemsPerPage = action.payload;
-            state.operationCarsPagination.currentPage = 1;
-
-            // Пересчет totalPages
-            const totalOperationCars = state.searchOCarBool ?
-                state.searchOCars?.length || 0 :
-                state.data?.cars?.filter(car => car.status.level !== 6).length || 0;
-
-            state.operationCarsPagination.totalPages = Math.ceil(
-                totalOperationCars / action.payload
-            );
+            saveSession(state); // Сохраняем состояние
         },
 
         updateOperationCarsTotalPages(state) {
@@ -327,15 +401,13 @@ const dataSlice = createSlice({
                 totalOperationCars / state.operationCarsPagination.itemsPerPage
             );
 
-            // Корректировка currentPage если он превышает totalPages
             if (state.operationCarsPagination.currentPage > state.operationCarsPagination.totalPages) {
                 state.operationCarsPagination.currentPage = Math.max(1, state.operationCarsPagination.totalPages);
             }
+            saveSession(state); // Сохраняем состояние
         },
 
-        // Общий редьюсер для обновления всех totalPages
         updateAllPagination(state) {
-            // Для выданных авто
             const totalCompletedCars = state.searchCCarBool ?
                 state.searchCCars?.length || 0 :
                 state.data?.cars?.filter(car => car.status.level === 6).length || 0;
@@ -344,7 +416,6 @@ const dataSlice = createSlice({
                 totalCompletedCars / state.completedCarsPagination.itemsPerPage
             );
 
-            // Для авто в работе
             const totalOperationCars = state.searchOCarBool ?
                 state.searchOCars?.length || 0 :
                 state.data?.cars?.filter(car => car.status.level !== 6).length || 0;
@@ -353,7 +424,6 @@ const dataSlice = createSlice({
                 totalOperationCars / state.operationCarsPagination.itemsPerPage
             );
 
-            // Корректировка currentPage для обоих списков
             if (state.completedCarsPagination.currentPage > state.completedCarsPagination.totalPages) {
                 state.completedCarsPagination.currentPage = Math.max(1, state.completedCarsPagination.totalPages);
             }
@@ -361,6 +431,7 @@ const dataSlice = createSlice({
             if (state.operationCarsPagination.currentPage > state.operationCarsPagination.totalPages) {
                 state.operationCarsPagination.currentPage = Math.max(1, state.operationCarsPagination.totalPages);
             }
+            saveSession(state); // Сохраняем состояние
         }
     },
     extraReducers: (builder) => {
@@ -370,13 +441,10 @@ const dataSlice = createSlice({
                 state.error = null;
                 state.data = action.payload;
                 state.isAuth = true;
-                console.log(action.payload)
 
-                // Обновление пагинации после загрузки данных
                 state.completedCarsPagination.currentPage = 1;
                 state.operationCarsPagination.currentPage = 1;
 
-                // Пересчет totalPages
                 const totalCompletedCars = action.payload?.cars?.filter((car:ICar) => car.status.level === 6).length || 0;
                 const totalOperationCars = action.payload?.cars?.filter((car:ICar) => car.status.level !== 6).length || 0;
 
@@ -387,6 +455,8 @@ const dataSlice = createSlice({
                 state.operationCarsPagination.totalPages = Math.ceil(
                     totalOperationCars / state.operationCarsPagination.itemsPerPage
                 );
+
+                saveSession(state); // Сохраняем состояние после успешного входа
             })
 
             .addCase(fetchSignIn.pending, (state) => {
@@ -396,19 +466,21 @@ const dataSlice = createSlice({
                 state.status = 'failed';
                 state.isAuth = false;
                 state.error = action.payload as string || 'Произошла ошибка! Попробуйте снова.';
+                clearSession(); // Очищаем сессию при ошибке входа
             })
             .addCase(fetchChangePassword.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.error = null;
-                state.isAuth = true;
+                // ❌ УБИРАЕМ state.isAuth = true; - не меняем статус авторизации
                 state.server_message = action.payload as string || 'Пароль успешно изменен.';
+                saveSession(state);
             })
             .addCase(fetchChangePassword.pending, (state) => {
                 state.status = 'loading';
             })
             .addCase(fetchChangePassword.rejected, (state, action) => {
                 state.status = 'failed';
-                state.isAuth = false;
+                // ❌ УБИРАЕМ state.isAuth = false; - не выходим из системы при ошибке смены пароля
                 state.error = action.payload as string || 'Произошла ошибка! Попробуйте снова.';
             });
     }
@@ -423,7 +495,6 @@ export const {
     clearSearchOptionalCars,
     clearSearchCompletedCars,
     searchCompletedCars,
-    changePassword,
     sortCarsByDate,
     applyDefaultSort,
     setCompletedCarsCurrentPage,

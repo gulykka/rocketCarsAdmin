@@ -49,9 +49,9 @@ class Authorization(BaseModel):
 
 
 class ChangePass(BaseModel):
-    id: str
-    old: str
-    new: str
+    id: int
+    old_pass: str
+    new_pass: str
 
 
 class CarResponse(BaseModel):

@@ -95,6 +95,7 @@ select
 .operation_car_container, .completed_cars_list_container
   @include default_container(column, 10px, 10px)
 
+
 @media (max-width: 850px)
   .operation_car_card_container
     @include default_container(column, 30px, 10px)
@@ -111,13 +112,19 @@ select
     max-width: calc(100% - 30px)
   .sore_container
     max-width: calc(100% - 30px)
-.photo_car
-  border-radius: 16px
+
 
 .photos_container
   position: relative
   @include default_container(column, 10px, 10px)
   width: 300px
+.photo_car
+  width: 300px
+  height: 300px
+  border-radius: 16px
+  object-fit: cover
+  object-position: center
+  align-self: center
 .loading
   opacity: 0.5
 .title_loading
@@ -139,6 +146,8 @@ select
   column-gap: 50px
   grid-template-columns: 3fr 1fr
 
+.padding
+  padding-bottom: 80px
 @media (max-width: 750px)
   .information_container
     grid-template-columns: 1fr !important

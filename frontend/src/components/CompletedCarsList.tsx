@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ICar} from "../interfaces";
 import CompletedCarCard from "./CompletedCarCard";
 import {useAppSelector} from "../hooks/redux-hooks";
@@ -25,6 +25,10 @@ const CompletedCarsList = () => {
     // Пагинация для выданных авто
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedCars = carsToDisplay.slice(startIndex, startIndex + itemsPerPage);
+
+    useEffect(() => {
+        console.log(carsToDisplay)
+    }, [searchBool])
 
     return (
         <div className={'completed_cars_list_container'}>

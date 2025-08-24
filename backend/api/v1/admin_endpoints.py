@@ -179,7 +179,7 @@ async def change(data: ChangePass, bitrix_repo: BitrixRepository = Depends(get_a
     """
     Изменяет пароль клиента в Bitrix24.
     """
-    success = await bitrix_repo.update_contact_pass(data.new, data.id)
+    success = await bitrix_repo.update_contact_pass(data.new_pass, data.id)
 
     if not success:
         raise HTTPException(

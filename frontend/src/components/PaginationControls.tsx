@@ -22,13 +22,13 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({paginationType, 
 
     // Добавляем отладочную информацию
     useEffect(() => {
-        console.log(`PaginationControls ${paginationType}:`, {
-            totalItems,
-            itemsPerPage,
-            currentPage,
-            totalPages,
-            shouldRender: totalItems > 0 && totalPages > 1
-        });
+        // console.log(`PaginationControls ${paginationType}:`, {
+        //     totalItems,
+        //     itemsPerPage,
+        //     currentPage,
+        //     totalPages,
+        //     shouldRender: totalItems > 0 && totalPages > 1
+        // });
     }, [totalItems, itemsPerPage, currentPage, totalPages, paginationType]);
 
     const handlePageChange = (page: number) => {
@@ -52,7 +52,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({paginationType, 
 
     // Условия отрисовки - проверьте эти условия
     if (totalItems === 0) {
-        console.log(`Not rendering ${paginationType} - no items`);
+        // console.log(`Not rendering ${paginationType} - no items`);
         return null;
     }
 
@@ -100,7 +100,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({paginationType, 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
-    console.log(`Rendering ${paginationType} pagination:`, pageNumbers);
+    // console.log(`Rendering ${paginationType} pagination:`, pageNumbers);
 
     return (
         <div className="pagination-controls">

@@ -11,6 +11,7 @@ const InputOperationCar = () => {
     useEffect(() => {
         return () => {
             dispatch(clearSearchOptionalCars())
+            console.log(1)
         };
     }, [textSearch]);
 

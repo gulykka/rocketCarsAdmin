@@ -11,7 +11,9 @@ const InputCompletedCar = () => {
     useEffect(() => {
         return () => {
             dispatch(clearSearchCompletedCars())
+            console.log(0)
         };
+
     }, [textSearch]);
 
     function searchCar() {

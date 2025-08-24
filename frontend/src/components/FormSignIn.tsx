@@ -8,7 +8,10 @@ const FormSignIn = () => {
     const navigate = useNavigate();
 
     const [login, setLogin] = useState('');
+    const [visibleLogin, setVisibleLogin] = useState(false);
     const [password, setPassword] = useState('');
+    const [visiblePassword, setVisiblePassword] = useState(false);
+
     const [error, setError] = useState<string | null>(null);
 
     const status = useAppSelector((state) => state.data.status);
@@ -38,13 +41,15 @@ const FormSignIn = () => {
                     id="myInput"
                     value={login}
                     onChange={(e) => setLogin(e.target.value)}
+                    onFocus={() => setVisibleLogin(true)}
+                    onBlur={() => setVisibleLogin(false)}
                     placeholder=" "
                     disabled={status === 'loading'}
                 />
                 <label className="placeholder" htmlFor="myInput">
                     Введите логин
                 </label>
-                {(login || document.activeElement === document.getElementById('myInput')) && (
+                {(visibleLogin || (!visibleLogin && login)) && (
                     <label className="background">0</label>
                 )}
             </div>
@@ -55,13 +60,15 @@ const FormSignIn = () => {
                     id="mySecondInput"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onFocus={() => setVisiblePassword(true)}
+                    onBlur={() => setVisiblePassword(false)}
                     placeholder=" "
                     disabled={status === 'loading'}
                 />
                 <label className="placeholder" htmlFor="mySecondInput">
                     Введите пароль
                 </label>
-                {(password || document.activeElement === document.getElementById('mySecondInput')) && (
+                {(visiblePassword || (password && !visiblePassword)) && (
                     <label className="background_VIN">0</label>
                 )}
             </div>

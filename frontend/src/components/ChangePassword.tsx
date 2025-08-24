@@ -20,39 +20,34 @@ const ChangePassword = () => {
     const status = useAppSelector(state => state.data.status);
 
     const handleChangePassword = async () => {
-        // Сброс ошибок
         if (!oldPassword || !newPassword || !repeatNewPassword) {
-            // Можно оставить локальную валидацию
+            // Можно добавить локальную валидацию
             return;
         }
 
         if (newPassword !== repeatNewPassword) {
-            // setError('Пароли не совпадают!');
+            // setLocalError('Пароли не совпадают!');
             return;
         }
 
-        // Отправляем запрос
-        try {
-            await dispatch(fetchChangePassword({
-                id: userId,
-                oldPassword,
-                newPassword
-            })).unwrap(); // ✅ unwrap() выбросит ошибку, если reject
 
-            // Сброс полей
+        dispatch(fetchChangePassword({
+            id: userId,
+            old_pass: oldPassword,
+            new_pass : newPassword
+        }))
+
+            // Сброс полей только при успехе
             setOldPassword('');
             setNewPassword('');
             setRepeatNewPassword('');
 
-            // Автоочистка сообщения через 2 сек
+            // Автоочистка сообщения
             setTimeout(() => {
                 dispatch(deleteServerMessage());
             }, 2000);
-        } catch (err: any) {
-            // err — это payload из rejectWithValue
-            console.error('Ошибка смены пароля:', err);
-            // Можно установить локальную ошибку, если нужно
-        }
+
+
     };
 
     return (

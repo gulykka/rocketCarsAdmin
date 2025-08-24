@@ -1,5 +1,4 @@
 import React from 'react';
-import {ICarPhoto} from "../interfaces";
 import Slider from "react-slick";
 
 interface PhotoSliderProps {
@@ -7,12 +6,11 @@ interface PhotoSliderProps {
     selectedIndex?: number
 }
 
-// Определите типы для пропсов стрелок
 type ArrowProps = React.ComponentProps<'button'>;
 
 const CustomPrevArrow: React.FC<ArrowProps> = (props) => {
     return (
-        <button {...props} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+        <button {...props} style={{ background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 1 }}>
             <img src="arrow-left.png" alt="Previous" style={{ width: '50px', height: '50px'}} />
         </button>
     );
@@ -20,8 +18,7 @@ const CustomPrevArrow: React.FC<ArrowProps> = (props) => {
 
 const CustomNextArrow: React.FC<ArrowProps> = (props) => {
     return (
-        <button {...props} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
-
+        <button {...props} style={{ background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 1 }}>
             <img src="arrow-right.png" alt="Next" style={{ width: '50px', height: '50px'}} />
         </button>
     );
@@ -37,13 +34,22 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ images }) => {
         arrows: true,
         prevArrow: <CustomPrevArrow />,
         nextArrow: <CustomNextArrow />,
+        adaptiveHeight: true, // Ключевая настройка для адаптации высоты
     };
 
     return (
         <Slider {...settings} className={'slider'}>
             {images.map((image, index) => (
-                <div key={index}>
-                    <img src={image} alt={`Slide ${index}`} style={{ width: '100%', height: 'auto' }} />
+                <div key={index} className="slide-container">
+                    <img
+                        src={image}
+                        alt={`Slide ${index}`}
+                        style={{
+                            width: '100%',
+                            maxHeight: '600px', // Максимальная высота для очень больших изображений
+                            objectFit: 'contain' // Сохраняет пропорции изображения
+                        }}
+                    />
                 </div>
             ))}
         </Slider>

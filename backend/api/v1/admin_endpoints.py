@@ -190,12 +190,13 @@ async def change(data: ChangePass, bitrix_repo: BitrixRepository = Depends(get_a
     return {"success": True}
 
 
-@admin_router.get("/download-photos/{parent_id}/{agent_id}/{car_id}/{client_name}/")
+@admin_router.get("/download-photos/{parent_id}/{agent_id}/{car_id}/{client_name}/{win}/")
 async def download_photos(
         parent_id: int | None,
         agent_id: int | None,
         car_id: int | None,
         client_name: str,
+        win: str,
         bitrix_repo: BitrixRepository = Depends(get_admin_repository),
 ):
     """
@@ -253,6 +254,6 @@ async def download_photos(
         zip_buffer,
         media_type="application/zip",
         headers={
-            "Content-Disposition": f"attachment; filename={quote(client_name)}.zip"
+            "Content-Disposition": f"attachment; filename={quote(client_name)}_{quote(win)}.zip"
         }
     )

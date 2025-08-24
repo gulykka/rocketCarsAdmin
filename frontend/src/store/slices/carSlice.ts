@@ -107,7 +107,7 @@ export const fetchSignIn = createAsyncThunk(
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const response = await fetch('http://localhost:5000/api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -136,7 +136,7 @@ export const fetchChangePassword = createAsyncThunk(
     async ({ id, old_pass, new_pass}: { id: any; old_pass: string; new_pass: string }, thunkAPI) => {
         try {
             console.log(typeof id)
-            const response = await fetch('http://localhost:5000/api/change-pass', {
+            const response = await fetch('/api/change-pass', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

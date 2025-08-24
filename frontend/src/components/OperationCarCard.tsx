@@ -30,7 +30,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({ operationCar }) => {
         try {
             setLoading(true);
             const response = await fetch(
-                `http://localhost:5000/api/load-photo/${operationCar.parent_id}`,
+                `/api/load-photo/${operationCar.parent_id}`,
                 {
                     method: 'GET',
                     headers: {
@@ -59,7 +59,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({ operationCar }) => {
             setDownloading(true);
 
             const response = await fetch(
-                `http://localhost:5000/api/download-photos/${operationCar.parent_id}/${agent_id}/${operationCar.id}/${operationCar.name}/${operationCar.VIN}`,
+                `/api/download-photos/${operationCar.parent_id}/${agent_id}/${operationCar.id}/${operationCar.name}/${operationCar.VIN}`,
                 {
                     method: 'GET',
                     // ⚠️ Убираем 'Content-Type': 'application/json' — это не тело запроса

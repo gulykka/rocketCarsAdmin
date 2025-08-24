@@ -27,7 +27,7 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
         try {
             setLoading(true);
             const response = await fetch(
-                `http://localhost:5000/api/load-photo/${completedCar.parent_id}`,
+                `/api/load-photo/${completedCar.parent_id}`,
                 {
                     method: 'GET',
                     headers: {
@@ -58,7 +58,7 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
             setDownloading(true);
 
             const response = await fetch(
-                `http://localhost:5000/api/download-photos/${completedCar.parent_id}/${agent_id}/${completedCar.id}/${completedCar.name}/${completedCar.VIN}`,
+                `/api/download-photos/${completedCar.parent_id}/${agent_id}/${completedCar.id}/${completedCar.name}/${completedCar.VIN}`,
                 {
                     method: 'GET',
                     // ⚠️ Убираем 'Content-Type': 'application/json' — это не тело запроса

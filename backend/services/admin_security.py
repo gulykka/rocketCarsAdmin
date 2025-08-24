@@ -36,7 +36,10 @@ class AdminSecurity:
     async def get_cars(self, contact_id: int | str) -> list[Car] | None:
         cars_bx = await self.repository.get_cars_by_agent_contact_id(contact_id)
         if cars_bx is not None:
-            return [self.serializer.car_to_model(car) for car in cars_bx]
+            return [
+                model for car in cars_bx
+                if (model := self.serializer.car_to_model(car)) is not None
+            ]
         return None
 
     async def change_password(self, new_password: str, contact_id: str | int) -> bool:

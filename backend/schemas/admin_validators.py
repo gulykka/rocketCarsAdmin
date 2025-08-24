@@ -29,7 +29,7 @@ class Manager(BaseModel):
 
 
 class User(BaseModel):
-    id: int | str
+    id: int
     name: str
     login: str
     password: str

@@ -1,12 +1,16 @@
-import React, { useState } from 'react'; // ✅ убран `use`
+import React, { FC, useState } from 'react';
 import ColorButton from './UI/ColorButton';
 import { useAppDispatch, useAppSelector } from '../hooks/redux-hooks';
 import { fetchChangePassword, deleteServerMessage } from '../store/slices/carSlice';
 
-const ChangePassword = () => {
+interface ChangePasswordProps {
+    onClose?: () => void;
+}
+
+const ChangePassword: FC<ChangePasswordProps> = ({ onClose }) => {
     const dispatch = useAppDispatch();
 
-    const userId = useAppSelector(state => state.data.data?.user?.id);
+    const userId = useAppSelector((state) => state.data.data?.user?.id);
 
     const [oldPassword, setOldPassword] = useState('');
     const [visibleOldPassword, setVisibleOldPassword] = useState(false);
@@ -15,56 +19,69 @@ const ChangePassword = () => {
     const [repeatNewPassword, setRepeatNewPassword] = useState('');
     const [visibleRepeatNewPassword, setVisibleRepeatNewPassword] = useState(false);
 
-    const error = useAppSelector(state => state.data.error);
-    const serverMessage = useAppSelector(state => state.data.server_message);
-    const status = useAppSelector(state => state.data.status);
+    const error = useAppSelector((state) => state.data.error);
+    const status = useAppSelector((state) => state.data.status);
+    const [localError, setLocalError] = useState('');
 
     const handleChangePassword = async () => {
         if (!oldPassword || !newPassword || !repeatNewPassword) {
-            // Можно добавить локальную валидацию
+            setLocalError('Заполните все поля!');
             return;
         }
 
         if (newPassword !== repeatNewPassword) {
-            // setLocalError('Пароли не совпадают!');
+            setLocalError('Пароли не совпадают!');
             return;
         }
 
+        try {
+            // Ждём успешного ответа
+            await dispatch(
+                fetchChangePassword({
+                    id: userId,
+                    old_pass: oldPassword,
+                    new_pass: newPassword,
+                })
+            ).unwrap();
 
-        dispatch(fetchChangePassword({
-            id: userId,
-            old_pass: oldPassword,
-            new_pass : newPassword
-        }))
-
-            // Сброс полей только при успехе
+            // ✅ Успех: сброс, закрытие, уведомление
             setOldPassword('');
             setNewPassword('');
             setRepeatNewPassword('');
+            setLocalError('');
+            dispatch(deleteServerMessage()); // очистить server_message, если нужно
 
-            // Автоочистка сообщения
-            setTimeout(() => {
-                dispatch(deleteServerMessage());
-            }, 2000);
+            // Можно использовать alert или лучше — показать в интерфейсе
+            alert('Пароль успешно изменён!');
 
-
+            // Закрываем модальное окно
+            if (onClose) {
+                onClose();
+            }
+        } catch (err) {
+            // Ошибка уже будет в state.data.error, но можно логировать
+            console.error('Ошибка смены пароля:', err);
+            // Оставляем error в интерфейсе
+        }
     };
 
     return (
         <div className="change_password_window_container">
-            <span style={{ fontSize: '25px' }}>Смена пароля</span>
+            <span style={{ fontSize: '25px', color: 'white' }}>Смена пароля</span>
 
             <div className="input-container_">
                 <input
                     className="change_input"
                     type={visibleOldPassword ? 'text' : 'password'}
                     value={oldPassword}
-                    onChange={e => setOldPassword(e.target.value)}
+                    onChange={(e) => setOldPassword(e.target.value)}
                     onFocus={() => setVisibleOldPassword(true)}
                     onBlur={() => setVisibleOldPassword(false)}
                     placeholder=" "
                 />
-                <label className="placeholder_" htmlFor="old-pass">Введите старый пароль</label>
+                <label className="placeholder_" htmlFor="old-pass">
+                    Введите старый пароль
+                </label>
                 {(visibleOldPassword || oldPassword) && <label className="background_old">0</label>}
             </div>
 
@@ -73,12 +90,14 @@ const ChangePassword = () => {
                     className="change_input"
                     type={visibleNewPassword ? 'text' : 'password'}
                     value={newPassword}
-                    onChange={e => setNewPassword(e.target.value)}
+                    onChange={(e) => setNewPassword(e.target.value)}
                     onFocus={() => setVisibleNewPassword(true)}
                     onBlur={() => setVisibleNewPassword(false)}
                     placeholder=" "
                 />
-                <label className="placeholder_" htmlFor="new-pass">Введите новый пароль</label>
+                <label className="placeholder_" htmlFor="new-pass">
+                    Введите новый пароль
+                </label>
                 {(visibleNewPassword || newPassword) && <label className="background_new">0</label>}
             </div>
 
@@ -87,17 +106,19 @@ const ChangePassword = () => {
                     className="change_input"
                     type={visibleRepeatNewPassword ? 'text' : 'password'}
                     value={repeatNewPassword}
-                    onChange={e => setRepeatNewPassword(e.target.value)}
+                    onChange={(e) => setRepeatNewPassword(e.target.value)}
                     onFocus={() => setVisibleRepeatNewPassword(true)}
                     onBlur={() => setVisibleRepeatNewPassword(false)}
                     placeholder=" "
                 />
-                <label className="placeholder_" htmlFor="repeat-pass">Повторите новый пароль</label>
+                <label className="placeholder_" htmlFor="repeat-pass">
+                    Повторите новый пароль
+                </label>
                 {(visibleRepeatNewPassword || repeatNewPassword) && <label className="background_new_">0</label>}
             </div>
 
             {error && <span className="error">{error}</span>}
-            {serverMessage && <span className="succeeded">{serverMessage}</span>}
+            {localError && <span className="error">{localError}</span>}
 
             <ColorButton
                 onClick={handleChangePassword}

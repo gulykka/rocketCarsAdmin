@@ -7,6 +7,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import carCompleted from "./CarCompleted";
 import {useAppSelector} from "../hooks/redux-hooks";
+import {API_URI} from "../API_URI";
 
 interface CompletedCarCardProps {
     completedCar: ICar;
@@ -26,8 +27,9 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
     const getPhotos = async () => {
         try {
             setLoading(true);
+            const url = API_URI.load_photos + `${completedCar.parent_id}`
             const response = await fetch(
-                `/api/load-photo/${completedCar.parent_id}`,
+                url,
                 {
                     method: 'GET',
                     headers: {
@@ -56,9 +58,9 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
     async function downloadPhotos() {
         try {
             setDownloading(true);
-
+            const url_ = API_URI.download_photos + `${completedCar.parent_id}/${agent_id}/${completedCar.id}/${completedCar.name}/${completedCar.VIN}`
             const response = await fetch(
-                `/api/download-photos/${completedCar.parent_id}/${agent_id}/${completedCar.id}/${completedCar.name}/${completedCar.VIN}`,
+                url_,
                 {
                     method: 'GET',
                     // ⚠️ Убираем 'Content-Type': 'application/json' — это не тело запроса
@@ -98,13 +100,6 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
             console.log('Фото успешно скачаны:', filename);
         } catch (e: any) {
             console.error('Ошибка при скачивании фото:', e);
-
-            // Дополнительная диагностика
-            if (e.message.includes('Failed to fetch')) {
-                alert('Не удалось подключиться к серверу. Проверь URL и доступность бэкенда.');
-            } else {
-                alert(`Ошибка: ${e.message}`);
-            }
         } finally {
             setDownloading(false);
         }

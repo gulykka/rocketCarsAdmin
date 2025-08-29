@@ -1,8 +1,26 @@
-* {
-  padding: 0;
+body {
   margin: 0;
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.App {
+#root, body, html, .App {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #181A19
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  monospace;
+}
+
+
+
+* {
+  margin: 0;
+  padding: 0;
 }

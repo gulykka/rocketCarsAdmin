@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ICar, IData } from "../../interfaces";
+import {API_URI} from "../../API_URI";
 
 export interface IDataState {
     isAuth: boolean;
@@ -107,7 +108,7 @@ export const fetchSignIn = createAsyncThunk(
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const response = await fetch('/api/login', {
+            const response = await fetch(API_URI.login, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -136,7 +137,7 @@ export const fetchChangePassword = createAsyncThunk(
     async ({ id, old_pass, new_pass}: { id: any; old_pass: string; new_pass: string }, thunkAPI) => {
         try {
             console.log(typeof id)
-            const response = await fetch('/api/change-pass', {
+            const response = await fetch(API_URI.change_pass, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

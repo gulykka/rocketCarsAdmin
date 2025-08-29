@@ -11,17 +11,7 @@
   width: 50px
   height: 50px
 
-header
-  background: #181A19
-  position: fixed
-  top: 0
-  z-index: 10
-  height: 50px
-  left: 0
-  right: 0
-  @include default_container(row, 10px, 10px)
-  justify-content: space-between
-  padding: 40px 50px
+
 .navigation
   @include default_container(row, 0px, 10px)
 .home_button_img
@@ -107,7 +97,6 @@ select
   .work_panel_container
     @include default_container(column, 10px, 10px)
     justify-content: center
-  //  width: calc(100% - 210px)
   .input_search
     max-width: calc(100% - 30px)
   .sore_container
@@ -115,8 +104,8 @@ select
 
 
 .photos_container
-  position: relative
   @include default_container(column, 10px, 10px)
+
   width: 300px
 .photo_car
   width: 300px
@@ -124,7 +113,6 @@ select
   border-radius: 16px
   object-fit: cover
   object-position: center
-  align-self: center
 .loading
   opacity: 0.5
 .title_loading
@@ -132,9 +120,14 @@ select
   top: 40%
   left: 40%
 @media (max-width: 850px)
+
+  .photo_car
+    width: 100%
+    object-fit: cover
+    object-position: center
   .photos_container
     width: 100%
-    padding-top: 70px
+    padding-top: 50px
 
 
 .operation_car_card_container, .completed_car_card_container
@@ -167,6 +160,7 @@ select
     display: flex !important
     flex-direction: column
 
+
 .information_container, .information_container_
   @include default_container(column, 30px, 10px)
 
@@ -180,6 +174,7 @@ select
 
 .information_car_status_container
   grid-area: status
+
 
 .line
   height: 6px
@@ -352,7 +347,7 @@ select
   right: 0
   bottom: 0
   background-color: rgba(0, 0, 0, 0.8)
-  z-index: 1004 !important
+  z-index: 1004
 .overlay_
   position: fixed
   top: 0
@@ -360,7 +355,7 @@ select
   right: 0
   bottom: 0
   background-color: rgba(0, 0, 0, 0.8)
-  z-index: 1000
+  z-index: 1000 !important
 .popup_menu_container
   @include default_container(column, 10px, 10px)
   background: #222423
@@ -575,6 +570,7 @@ input:not(:placeholder-shown) + .placeholder_
 .error
   background: rgba(229, 27, 47, 0.5)
   padding: 7px
+  color: #D9D9D9
   border-radius: 10px
   font-size: 18px
 
@@ -605,9 +601,26 @@ footer
   display: flex
   position: fixed
   bottom: 0
-  z-index: -1
+  left: 0
+  right: 0
+  z-index: 0
   width: 100%
+
+
+header
+  background: #181A19
+  position: fixed
+  top: 0
+  z-index: 2
+  height: 50px
+  left: 0
+  right: 0
+  @include default_container(row, 10px, 10px)
+  justify-content: space-between
+  padding: 40px 50px
 
 .sort_container
   font-size: 14px
   color: #D9D9D9
+
+

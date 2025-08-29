@@ -34,6 +34,10 @@ const Header = () => {
                 <Link to={'/profile'}><img className={'img_logo_mini'} src={'logo.png'}/></Link>
                 <Link
                     className={'navigation_link'}
+                    to={'/profile'}>
+                    <GreyButton className={location === '/profile' ? 'grey_navigation_link' : ' '}>Главная</GreyButton></Link>
+                <Link
+                    className={'navigation_link'}
                     to={'/operation'}>
                     <GreyButton className={location === '/operation' ? 'grey_navigation_link' : ' '}>Авто в работе</GreyButton>
                 </Link>
@@ -41,10 +45,6 @@ const Header = () => {
                     className={'navigation_link'}
                     to={'/completed'}>
                     <GreyButton className={location === '/completed' ? 'grey_navigation_link' : ' '}>Выданные авто</GreyButton></Link>
-                <Link
-                    className={'navigation_link'}
-                    to={'/profile'}>
-                    <GreyButton className={location === '/profile' ? 'grey_navigation_link' : ' '}>Главная</GreyButton></Link>
             </div>
             {location === '/completed' &&
                 <div className={'input_mobile'}>

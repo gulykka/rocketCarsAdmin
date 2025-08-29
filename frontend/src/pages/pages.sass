@@ -6,13 +6,13 @@
 
 .login_page_container
   @include default_container(column, 10px, 0px)
-  padding: 70px
   height: 100%
   color: white
-  z-index: 2
+  z-index: 1
+  padding: 180px 70px 70px
 
 .car_operation_page, .completed_cars_container, .profile_page_container
-
+  z-index: 1
   @include default_container(column, 30px, 10px)
   justify-content: space-between
   padding: 130px 50px 10px

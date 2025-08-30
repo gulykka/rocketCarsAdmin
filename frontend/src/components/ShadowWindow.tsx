@@ -29,7 +29,15 @@ const ShadowWindow: FC<ShadowWindowProps> = ({ imageSrc, onClose, selectedIndex 
             <div className="overlay" onClick={onClose} />
             <div className="shadow_window_img_container">
                 {imageSrc && imageSrc.length > 0 ? (
-                    <PhotoSlider images={imageSrc} selectedIndex={selectedIndex} />
+                    <>
+                        <PhotoSlider images={imageSrc} selectedIndex={selectedIndex} />
+                        <img
+                            onClick={onClose}
+                            className="cancel"
+                            src="cancel.png"
+                            alt="Закрыть"
+                        />
+                    </>
                 ) : (
                     <div className="change_input_container">
                         <ChangePassword onClose={onClose}/>

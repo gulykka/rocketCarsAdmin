@@ -114,7 +114,8 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
                 {operationCar.auto && <span>{operationCar.auto}</span>}
                 {operationCar.year && <span>{formatDateToDDMMYYYY(operationCar.year)}</span>}
                 {operationCar.VIN && <span>{operationCar.VIN}</span>}
-
+                <div className={'not_visible'}>k</div>
+                <div className={'not_visible'}>k</div>
                 <div className="information_car_status_container">
                     <div style={{width: `${currentStatus * 16.7}%`}} className="line_progress"></div>
                     <div className="line"></div>

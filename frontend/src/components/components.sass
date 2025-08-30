@@ -90,7 +90,7 @@ select
   .operation_car_card_container
     @include default_container(column, 30px, 10px)
 
-@media (max-width: 650px)
+@media (max-width: 750px)
   .search_container
     @include default_container(column, 10px, 10px)
 
@@ -618,9 +618,14 @@ header
   @include default_container(row, 10px, 10px)
   justify-content: space-between
   padding: 40px 50px
-
+@media(max-width: 600px)
+  .work_panel_container
+    padding-top: 120px
 .sort_container
   font-size: 14px
   color: #D9D9D9
-
-
+.not_visible
+  color: #222423
+@media(max-width: 850px)
+  .not_visible
+    display: none

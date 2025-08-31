@@ -3,7 +3,7 @@ from api.v1.admin_endpoints import admin_router
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-app = FastAPI(title="API сервиса личного кабинета агента RocketCars")
+app = FastAPI(title="API сервиса личного кабинета агента RocketCars", redirect_slashes=False)
 
 app.include_router(admin_router)
 app.add_middleware(

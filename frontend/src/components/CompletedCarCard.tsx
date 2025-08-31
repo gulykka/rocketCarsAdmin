@@ -20,14 +20,14 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
     const [newPhotos, setNewPhotos] = useState<string[]>([]); // доп. фото для просмотра
     const [loading, setLoading] = useState(false);
     const [downloading, setDownloading] = useState(false)
-
+    const fallbackImage = 'image_not_found.png';
     const agent_id = useAppSelector(state => state.data.data?.user.id)
 
 
     const getPhotos = async () => {
         try {
             setLoading(true);
-            const url = API_URI.load_photos + `${completedCar.parent_id}`
+            const url = API_URI.load_photos + `${completedCar.parent_id}/${agent_id}/${completedCar.id}`
             const response = await fetch(
                 url,
                 {
@@ -109,12 +109,10 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
     return (
         <div className={completedCar.photos.length !== 0 ? "completed_car_card_container" : " completed_car_card_container padding"}>
             <div className="information_container">
-                {completedCar.name &&
-                    <span style={{ fontSize: '25px' }}>{completedCar.name}</span>
-                }
-                {completedCar.auto && <span>{completedCar.auto}</span>}
-                {completedCar.year && <span>{formatDateToDDMMYYYY(completedCar.year)}</span>}
-                {completedCar.VIN && <span>{completedCar.VIN}</span>}
+              {completedCar.name ? <span style={{ fontSize: '25px' }}>{completedCar.name}</span> : <br />}
+              {completedCar.auto ? <span>{completedCar.auto}</span> : <br />}
+              {completedCar.year ? <span>{formatDateToDDMMYYYY(completedCar.year)}</span> : <br />}
+              {completedCar.VIN ? <span>{completedCar.VIN}</span> : <br />}
                 <div className="information_car_completed_status_container">
                     {completedCar.status.datetime && <span className="status_completed_container">
             <span className="status_completed">
@@ -134,10 +132,9 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
                         className={loading ? 'photo_car loading' : 'photo_car'}
                         alt="car_photo"
                         src={completedCar.photos[0]}
-                        // onError={(e) => {
-                        //     e.currentTarget.src =
-                        //         'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjM1ZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
-                        // }}
+                        onError={e => {
+                                e.currentTarget.src = fallbackImage;
+                            }}
                     />
                 }
                 {completedCar.photos.length !== 0 &&

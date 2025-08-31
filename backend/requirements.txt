@@ -9,3 +9,4 @@ loguru
 python-dateutil
 httpx
 dotenv
+aiofiles

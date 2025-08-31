@@ -23,6 +23,8 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
     const agent_id = useAppSelector(state => state.data.data?.user.id)
     const code = operationCar.status.level;
     const currentStatus = code ?? 0;
+    const fallbackImage = 'image_not_found.png';
+
 
     /**
      * Подгрузка дополнительных фото для просмотра
@@ -30,7 +32,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
     const getPhotos = async () => {
         try {
             setLoading(true);
-            const url = API_URI.load_photos + `${operationCar.parent_id}`
+            const url = API_URI.load_photos + `${operationCar.parent_id}/${agent_id}/${operationCar.id}`
             const response = await fetch(
                 url,
                 {
@@ -109,12 +111,31 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
     return (
         <div
             className={operationCar.photos.length !== 0 ? "operation_car_card_container" : " operation_car_card_container padding"}>
-            <div className="information_container_">
-                {operationCar.name && <span style={{fontSize: '25px'}}>{operationCar.name}</span>}
-                {operationCar.auto && <span>{operationCar.auto}</span>}
-                {operationCar.year && <span>{formatDateToDDMMYYYY(operationCar.year)}</span>}
-                {operationCar.VIN && <span>{operationCar.VIN}</span>}
-                <div className={'not_visible'}>k</div>
+            <div className="information_container">
+                  {operationCar.name ? (
+                    <span style={{ fontSize: '25px' }}>{operationCar.name}</span>
+                  ) : (
+                    <div className="not_visible">k</div>
+                  )}
+
+                  {operationCar.auto ? (
+                    <span>{operationCar.auto}</span>
+                  ) : (
+                    <div className="not_visible">k</div>
+                  )}
+
+                  {operationCar.year ? (
+                    <span>{formatDateToDDMMYYYY(operationCar.year)}</span>
+                  ) : (
+                    <div className="not_visible">k</div>
+                  )}
+
+                  {operationCar.VIN ? (
+                    <span>{operationCar.VIN}</span>
+                  ) : (
+                    <div className="not_visible">k</div>
+                  )}
+
                 <div className={'not_visible'}>k</div>
                 <div className="information_car_status_container">
                     <div style={{width: `${currentStatus * 16.7}%`}} className="line_progress"></div>
@@ -148,8 +169,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({operationCar}) => {
                             alt="car_photo"
                             src={operationCar.photos[0]}
                             onError={e => {
-                                e.currentTarget.src =
-                                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjM1ZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+                                e.currentTarget.src = fallbackImage;
                             }}
                         />
                     }

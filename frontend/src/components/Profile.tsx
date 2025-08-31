@@ -40,7 +40,7 @@ const Profile = () => {
         const message = `Здравствуйте! Меня зовут ${user?.name || 'пользователь'}. У меня вопрос по автомобилям.`;
 
         // Создаем ссылку для WhatsApp
-        const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodeURIComponent(message)}`;
+        const whatsappUrl = `https://wa.me/79638398888?text=${encodeURIComponent(message)}`;
 
         // Открываем в новом окне
         window.open(whatsappUrl, '_blank');

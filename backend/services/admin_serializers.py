@@ -1,7 +1,16 @@
 from schemas.admin_validators import User, Manager, Car, Status, AuthUser
 import re
-from dateutil import parser
-from datetime import datetime
+from datetime import date
+
+
+def date_sort(date_lst: list[str]) -> str:
+    dates = []
+    for date_str in date_lst:
+        day, month, year = map(int, date_str.split('.'))
+        dates.append(date(year=year, month=month, day=day))
+
+    latest_date = max(dates)
+    return latest_date
 
 
 def normalize_phone(phone: str) -> str:
@@ -113,50 +122,61 @@ class AdminSerializer:
             number=normalize_phone(manager_bx.get("PERSONAL_MOBILE", ""))
         )
 
-    def serialize_date(date_str: str) -> datetime:
-        try:
-            parsed_date = parser.parse(date_str, fuzzy=True)
-            return parsed_date
-        except (ValueError, TypeError, OverflowError) as e:
-            return ""
-
     @staticmethod
     def car_to_model(car_bx: dict) -> Car:
-        if car_bx["stageId"] == 'DT135_12:FAIL':
+        if car_bx.get("stageId") == 'DT135_12:FAIL':
             return None
-        stage_item = AdminSerializer.STAGES[car_bx["stageId"]]
+
+        stage_item = AdminSerializer.STAGES.get(car_bx.get("stageId"), {})
+        if not isinstance(stage_item, dict):
+            stage_item = {}
 
         stage_history = car_bx.get('ufCrm8StageHistory')
-        cars_photo = car_bx.get("ufCrm8FotoAvto")
-        if not stage_history:
-            history_dates = []
-        elif isinstance(stage_history, list):
-            history_dates = [AdminSerializer.serialize_date(date[:10]) for date in stage_history]
-        elif isinstance(stage_history, str):
-            serialized = AdminSerializer.serialize_date(stage_history[:10])
-            history_dates = [serialized] if serialized else []
-        else:
-            history_dates = []
-        latest_date = max(history_dates) if history_dates else None
+        history_dates = []
 
-        if latest_date:
-            status_date = latest_date.strftime("%d.%m.%Y")
-        else:
-            status_date = ""
+        if stage_history:
+            if isinstance(stage_history, list):
+                history_dates = [
+                    date[:10]
+                    for date in stage_history
+                    if date and isinstance(date, str) and len(date) >= 10
+                ]
+            elif isinstance(stage_history, str) and len(stage_history) >= 10:
+                serialized = stage_history[:10]
+                if serialized:
+                    history_dates = [serialized]
+
+        latest_date = date_sort(history_dates) if history_dates else None
+        status_date = latest_date.strftime("%d.%m.%Y") if latest_date else ""
+
+        cars_photo = car_bx.get("ufCrm8FotoAvto")[0:1]
+        photos = []
+        if isinstance(cars_photo, list):
+            for photo in cars_photo:
+                if isinstance(photo, dict):
+                    url = photo.get("urlMachine", "").strip()
+                    if url:
+                        photos.append(url)
+
+        brand = car_bx.get('ufCrm8MarkaTc')
+        model = car_bx.get('ufCrm8ModelTc')
+
+        auto_parts = [str(val).strip() for val in [brand, model] if val is not None and str(val).strip() != '']
+        auto = " ".join(auto_parts)
+
+        vin = str(car_bx.get('ufCrm8Vin') or '').strip()
+        year = str(car_bx.get('ufCrm8DataVipuska') or '').strip()
         return Car(
-            id=car_bx.get("id", ""),
-            name=car_bx.get('ufCrm8FioKlient', ''),
-            VIN=car_bx.get("ufCrm8Vin", ""),
-            auto=" ".join([
-                car_bx.get('ufCrm8MarkaTc', ''),
-                car_bx.get('ufCrm8ModelTc', '')
-            ]).strip(),
-            year=car_bx.get("ufCrm8DataVipuska", ""),
-            photos=[photo.get("urlMachine", "") for photo in cars_photo],
+            id=str(car_bx.get("id", "")),
+            name=str(car_bx.get('ufCrm8FioKlient') or '').strip(),
+            VIN=vin,
+            auto=auto,
+            year=year,
+            photos=photos,
             status=Status(
-                level=stage_item.get("level") if isinstance(stage_item, dict) else None,
-                description=stage_item.get("description") if isinstance(stage_item, dict) else "",
+                level=stage_item.get("level"),
+                description=str(stage_item.get("description") or "").strip(),
                 datetime=status_date,
             ),
-            parent_id=car_bx.get("parentId2", "")
+            parent_id=str(car_bx.get("parentId2", ""))
         )

@@ -4,10 +4,7 @@ from schemas.admin_validators import LoginRequest, Car, User, CarResponse, Chang
 from api.dependencies.admin_dependencies import get_admin_security, get_admin_repository
 from services.admin_security import AdminSecurity
 from repositories.admin_repositories import BitrixRepository
-from fastapi.responses import StreamingResponse
-import httpx
-import io
-import zipfile
+from fastapi.responses import FileResponse
 from loguru import logger
 from urllib.parse import quote
 
@@ -91,8 +88,10 @@ async def login(request: LoginRequest, security: AdminSecurity = Depends(get_adm
             status_code=401,
             detail="Incorrect login or password"
         )
+
     manager = await security.get_manager(user.manager_id)
     cars = await security.get_cars(user.id)
+
     return CarResponse(
         user=user,
         manager=manager,
@@ -101,7 +100,7 @@ async def login(request: LoginRequest, security: AdminSecurity = Depends(get_adm
 
 
 @admin_router.get(
-    "/load-photo/{parent_id}/",
+    "/load-photo/{parent_id}/{agent_id}/{car_id}",
     summary="Получить фото погрузки по ID машины",
     description="""
         Возвращает список URL-фото погрузки, связанных с автомобилем.
@@ -134,13 +133,15 @@ async def login(request: LoginRequest, security: AdminSecurity = Depends(get_adm
         }
     }
 )
-async def load_photo(parent_id: str, bitrix_repo: BitrixRepository = Depends(get_admin_repository)):
+async def load_photo(parent_id: str, agent_id: str, car_id: str,
+                     bitrix_repo: BitrixRepository = Depends(get_admin_repository)):
     """
     Загружает фото погрузки, связанные с автомобилем.
     """
+    photos_cars_bx = await bitrix_repo.get_cars_photos(agent_id, car_id)
 
     photos = await bitrix_repo.get_loading_photos_by_car_id(int(parent_id))
-    return {"photos": photos}
+    return {"photos": photos + photos_cars_bx}
 
 
 @admin_router.post(
@@ -190,7 +191,125 @@ async def change(data: ChangePass, bitrix_repo: BitrixRepository = Depends(get_a
     return {"success": True}
 
 
-@admin_router.get("/download-photos/{parent_id}/{agent_id}/{car_id}/{client_name}/{win}/")
+#
+# @admin_router.get("/download-photos/{parent_id}/{agent_id}/{car_id}/{client_name}/{win}")
+# async def download_photos(
+#         parent_id: int | None,
+#         agent_id: int | None,
+#         car_id: int | None,
+#         client_name: str,
+#         win: str,
+#         bitrix_repo: BitrixRepository = Depends(get_admin_repository),
+# ):
+#     """
+#     Скачивание фото автомобилей и погрузок в виде ZIP-архива.
+#     """
+#     photos_cars_bx: list[str] = []
+#     photos_loading: list[str] = []
+#
+#     # Сбор фото автомобилей по agent_id
+#     if agent_id is not None and car_id is not None:
+#         try:
+#             photos_cars_bx = await bitrix_repo.get_cars_photos(agent_id, car_id)
+#             logger.info(f"Получено {len(photos_cars_bx)} записей с фото автомобилей для agent_id={agent_id}")
+#
+#         except Exception as e:
+#             logger.warning(f"Ошибка при получении фото автомобилей для agent_id={agent_id}: {e}")
+#
+#     if parent_id is not None:
+#         try:
+#             photos_loading = await bitrix_repo.get_loading_photos_by_car_id(parent_id)
+#             logger.info(f"Получено {len(photos_loading)} фото погрузок для parent_id={parent_id}")
+#         except Exception as e:
+#             logger.warning(f"Ошибка при получении фото погрузок для parent_id={parent_id}: {e}")
+#
+#     all_photo_urls: list[str] = photos_cars_bx + photos_loading
+#     if not all_photo_urls:
+#         raise HTTPException(status_code=404, detail="Фотографии не найдены")
+#
+#     zip_buffer = io.BytesIO()
+#
+#     async with httpx.AsyncClient(timeout=30.0) as client:
+#         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+#             for idx, url in enumerate(all_photo_urls):
+#                 try:
+#                     response = await client.get(url)
+#                     response.raise_for_status()
+#
+#                     # Определяем тип фото для имени файла
+#                     if idx < len(photos_cars_bx):
+#                         filename = f"car_{idx + 1}.jpg"
+#                     else:
+#                         rel_idx = idx - len(photos_cars_bx) + 1
+#                         filename = f"loading_{rel_idx}.jpg"
+#
+#                     zip_file.writestr(filename, response.content)
+#                 except Exception as e:
+#                     error_msg = f"Failed to download: {url}\nError: {str(e)}"
+#                     logger.warning(f"Не удалось скачать фото {url}: {e}")
+#                     zip_file.writestr(f"error_{idx}.txt", error_msg)
+#
+#     # Подготовка к отправке
+#     zip_buffer.seek(0)
+#
+#     return StreamingResponse(
+#         zip_buffer,
+#         media_type="application/zip",
+#         headers={
+#             "Content-Disposition": f"attachment; filename={quote(client_name)}_{quote(win)}.zip"
+#         }
+#     )
+import asyncio
+import random
+import httpx
+import io
+import zipfile
+from fastapi.responses import StreamingResponse
+
+
+async def fetch_photo(client: httpx.AsyncClient, url: str, filename: str, retries: int = 3) -> tuple[str, bytes]:
+    """Скачивание файла с retry"""
+    for attempt in range(1, retries + 1):
+        try:
+            resp = await client.get(url)
+            resp.raise_for_status()
+            return filename, resp.content
+        except Exception as e:
+            if attempt < retries:
+                await asyncio.sleep(0.5 * attempt + random.random())  # экспоненциальная пауза
+                continue
+            return f"error_{filename}.txt", f"Failed to download {url}\nError: {e}".encode()
+
+
+async def download_photos_and_zip(photo_urls: list[str], photos_cars_count: int) -> io.BytesIO:
+    """Скачивает фото с ограничением параллельности и кладет в zip"""
+    zip_buffer = io.BytesIO()
+    semaphore = asyncio.Semaphore(5)  # максимум 5 одновременных скачиваний
+
+    async def task(idx: int, url: str):
+        async with semaphore:
+            if idx < photos_cars_count:
+                filename = f"car_{idx + 1}.jpg"
+            else:
+                rel_idx = idx - photos_cars_count + 1
+                filename = f"loading_{rel_idx}.jpg"
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                return await fetch_photo(client, url, filename)
+
+    results = await asyncio.gather(*(task(i, url) for i, url in enumerate(photo_urls)))
+
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        for filename, content in results:
+            zip_file.writestr(filename, content)
+
+    zip_buffer.seek(0)
+    return zip_buffer
+
+
+import asyncio
+
+
+@admin_router.get("/download-photos/{parent_id}/{agent_id}/{car_id}/{client_name}/{win}")
 async def download_photos(
         parent_id: int | None,
         agent_id: int | None,
@@ -205,15 +324,15 @@ async def download_photos(
     photos_cars_bx: list[str] = []
     photos_loading: list[str] = []
 
-    # Сбор фото автомобилей по agent_id
+    # Сбор фото автомобилей
     if agent_id is not None and car_id is not None:
         try:
             photos_cars_bx = await bitrix_repo.get_cars_photos(agent_id, car_id)
             logger.info(f"Получено {len(photos_cars_bx)} записей с фото автомобилей для agent_id={agent_id}")
-
         except Exception as e:
             logger.warning(f"Ошибка при получении фото автомобилей для agent_id={agent_id}: {e}")
 
+    # Сбор фото погрузок
     if parent_id is not None:
         try:
             photos_loading = await bitrix_repo.get_loading_photos_by_car_id(parent_id)
@@ -222,38 +341,108 @@ async def download_photos(
             logger.warning(f"Ошибка при получении фото погрузок для parent_id={parent_id}: {e}")
 
     all_photo_urls: list[str] = photos_cars_bx + photos_loading
-    if not all_photo_urls:
-        raise HTTPException(status_code=404, detail="Фотографии не найдены")
-
-    zip_buffer = io.BytesIO()
-
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-            for idx, url in enumerate(all_photo_urls):
-                try:
-                    response = await client.get(url)
-                    response.raise_for_status()
-
-                    # Определяем тип фото для имени файла
-                    if idx < len(photos_cars_bx):
-                        filename = f"car_{idx + 1}.jpg"
-                    else:
-                        rel_idx = idx - len(photos_cars_bx) + 1
-                        filename = f"loading_{rel_idx}.jpg"
-
-                    zip_file.writestr(filename, response.content)
-                except Exception as e:
-                    error_msg = f"Failed to download: {url}\nError: {str(e)}"
-                    logger.warning(f"Не удалось скачать фото {url}: {e}")
-                    zip_file.writestr(f"error_{idx}.txt", error_msg)
-
-    # Подготовка к отправке
-    zip_buffer.seek(0)
-
+    zip_buffer = await download_photos_and_zip(all_photo_urls, len(photos_cars_bx))
     return StreamingResponse(
         zip_buffer,
         media_type="application/zip",
         headers={
             "Content-Disposition": f"attachment; filename={quote(client_name)}_{quote(win)}.zip"
-        }
+        },
     )
+# import io
+# import asyncio
+# import httpx
+# import zipfile
+# from fastapi.responses import StreamingResponse
+#
+#
+# async def fetch_with_retry(client: httpx.AsyncClient, url: str, filename: str, retries: int = 3) -> tuple[str, bytes]:
+#     """Скачивание файла с retry"""
+#     for attempt in range(1, retries + 1):
+#         try:
+#             resp = await client.get(url)
+#             resp.raise_for_status()
+#             return filename, resp.content
+#         except Exception as e:
+#             if attempt < retries:
+#                 await asyncio.sleep(0.5 * attempt)
+#                 continue
+#             return f"error_{filename}.txt", f"Failed to download {url}\nError: {e}".encode()
+#
+#
+# async def stream_zip(photo_urls: list[str], photos_cars_count: int, parallel: int = 5):
+#     """
+#     Генератор, который стримит zip с параллельной загрузкой фото.
+#     """
+#     semaphore = asyncio.Semaphore(parallel)
+#
+#     async def download(idx: int, url: str, client: httpx.AsyncClient):
+#         async with semaphore:
+#             if idx < photos_cars_count:
+#                 filename = f"car_{idx + 1}.jpg"
+#             else:
+#                 rel_idx = idx - photos_cars_count + 1
+#                 filename = f"loading_{rel_idx}.jpg"
+#             return await fetch_with_retry(client, url, filename)
+#
+#     async with httpx.AsyncClient(timeout=60.0) as client:
+#         # ⚡ запускаем все загрузки параллельно
+#         tasks = [asyncio.create_task(download(i, url, client)) for i, url in enumerate(photo_urls)]
+#
+#         # ⚡ будем брать результаты по мере готовности
+#         with io.BytesIO() as buffer:
+#             with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+#                 for fut in asyncio.as_completed(tasks):
+#                     filename, content = await fut
+#                     zip_file.writestr(filename, content)
+#
+#                     # сброс куска в поток
+#                     buffer.seek(0)
+#                     chunk = buffer.read()
+#                     yield chunk
+#                     buffer.seek(0)
+#                     buffer.truncate(0)
+#
+#             # финальный кусок (конец архива)
+#             buffer.seek(0)
+#             yield buffer.read()
+#
+#
+# @admin_router.get("/download-photos/{parent_id}/{agent_id}/{car_id}/{client_name}/{win}")
+# async def download_photos(
+#         parent_id: int | None,
+#         agent_id: int | None,
+#         car_id: int | None,
+#         client_name: str,
+#         win: str,
+#         bitrix_repo: BitrixRepository = Depends(get_admin_repository),
+# ):
+#     """
+#     Стриминг архива с фото + параллельная загрузка.
+#     """
+#     photos_cars_bx: list[str] = []
+#     photos_loading: list[str] = []
+#
+#     if agent_id is not None and car_id is not None:
+#         try:
+#             photos_cars_bx = await bitrix_repo.get_cars_photos(agent_id, car_id)
+#         except Exception as e:
+#             logger.warning(f"Ошибка при получении фото автомобилей: {e}")
+#
+#     if parent_id is not None:
+#         try:
+#             photos_loading = await bitrix_repo.get_loading_photos_by_car_id(parent_id)
+#         except Exception as e:
+#             logger.warning(f"Ошибка при получении фото погрузок: {e}")
+#
+#     all_photo_urls: list[str] = photos_cars_bx + photos_loading
+#     if not all_photo_urls:
+#         raise HTTPException(status_code=404, detail="Фотографии не найдены")
+#
+#     return StreamingResponse(
+#         stream_zip(all_photo_urls, len(photos_cars_bx), parallel=7),  # можно менять parallel
+#         media_type="application/zip",
+#         headers={
+#             "Content-Disposition": f"attachment; filename={quote(client_name)}_{quote(win)}.zip"
+#         },
+#     )

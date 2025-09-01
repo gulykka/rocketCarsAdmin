@@ -26,7 +26,7 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
 
         useEffect(() => {
             const interval = setInterval(() => {
-                setDots(prev => (prev.length >= 3 ? '' : prev + '.'));
+                setDots(prev => (prev.length >= 5 ? '' : prev + '.'));
             }, 500);
             return () => clearInterval(interval);
         }, []);
@@ -41,7 +41,7 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
         useEffect(() => {
             if (!downloading) return;
             const interval = setInterval(() => {
-                setDots(prev => (prev.length >= 3 ? '' : prev + '.'));
+                setDots(prev => (prev.length >= 5 ? '' : prev + '.'));
             }, 500);
             return () => clearInterval(interval);
         }, [downloading]);

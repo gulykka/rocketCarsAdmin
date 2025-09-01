@@ -11,11 +11,16 @@
   z-index: 1
   padding: 180px 70px 70px
 
-.car_operation_page, .completed_cars_container, .profile_page_container
+.completed_cars_container
+  z-index: 1
+  @include default_container(column, 10px, 10px)
+  justify-content: space-between
+  padding: 130px 50px 10px
+.car_operation_page, .profile_page_container
   z-index: 1
   @include default_container(column, 30px, 10px)
   justify-content: space-between
-  padding: 130px 50px 10px
+  padding: 168px 50px 10px
 
 @media (max-width: 600px)
   .car_operation_page, .completed_cars_container, .profile_page_container

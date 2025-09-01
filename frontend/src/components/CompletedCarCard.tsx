@@ -1,10 +1,10 @@
-import React, { FC, useState } from 'react';
-import { ICar } from '../interfaces';
+import React, {FC, useState} from 'react';
+import {ICar} from '../interfaces';
 import ColorButton from './UI/ColorButton';
 import ShadowWindow from './ShadowWindow';
-import { formatDateToDDMMYYYY } from '../functions/changeDate';
+import {formatDateToDDMMYYYY} from '../functions/changeDate';
 import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
+import {saveAs} from 'file-saver';
 import carCompleted from "./CarCompleted";
 import {useAppSelector} from "../hooks/redux-hooks";
 import {API_URI} from "../API_URI";
@@ -13,7 +13,7 @@ interface CompletedCarCardProps {
     completedCar: ICar;
 }
 
-const   CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
+const CompletedCarCard: FC<CompletedCarCardProps> = ({completedCar}) => {
     const [chosenPhoto, setChosenPhoto] = useState(0);
     const [visibleImageWindow, setVisibleImageWindow] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
@@ -107,12 +107,13 @@ const   CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
 
 
     return (
-        <div className={completedCar.photos.length !== 0 ? "completed_car_card_container" : " completed_car_card_container padding"}>
+        <div
+            className={completedCar.photos.length !== 0 ? "completed_car_card_container" : " completed_car_card_container padding"}>
             <div className="information_container">
-              {completedCar.name ? <span style={{ fontSize: '25px' }}>{completedCar.name}</span> : <br />}
-              {completedCar.auto ? <span>{completedCar.auto}</span> : <br />}
-              {completedCar.year ? <span>{formatDateToDDMMYYYY(completedCar.year)}</span> : <br />}
-              {completedCar.VIN ? <span>{completedCar.VIN}</span> : <br />}
+                {completedCar.name ? <span style={{fontSize: '25px'}}>{completedCar.name}</span> : <br/>}
+                {completedCar.auto ? <span>{completedCar.auto}</span> : <br/>}
+                {completedCar.year ? <span>{formatDateToDDMMYYYY(completedCar.year)}</span> : <br />}
+                {completedCar.VIN ? <span>{completedCar.VIN}</span> : <br/>}
                 <div className="information_car_completed_status_container">
                     {completedCar.status.datetime && <span className="status_completed_container">
             <span className="status_completed">
@@ -120,7 +121,7 @@ const   CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
             </span>
           </span>
                     }
-                    <span style={{ textAlign: 'center' }}>{completedCar.status.description}</span>
+                    <span style={{textAlign: 'center'}}>{completedCar.status.description}</span>
                 </div>
             </div>
 
@@ -133,8 +134,8 @@ const   CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
                         alt="car_photo"
                         src={completedCar.photos[0]}
                         onError={e => {
-                                e.currentTarget.src = fallbackImage;
-                            }}
+                            e.currentTarget.src = fallbackImage;
+                        }}
                     />
                 }
                 {completedCar.photos.length !== 0 &&

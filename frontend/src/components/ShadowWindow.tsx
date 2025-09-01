@@ -9,6 +9,7 @@ interface ShadowWindowProps {
     onClose: () => void;
     imageSrc?: string[];
     selectedIndex?: number;
+
 }
 
 const ShadowWindow: FC<ShadowWindowProps> = ({ imageSrc, onClose, selectedIndex }) => {

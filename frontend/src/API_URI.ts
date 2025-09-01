@@ -6,8 +6,8 @@ interface API_URI_I {
 }
 
 export const API_URI = {
-    login: `/api/login`,
-    change_pass: `/api/change-pass`,
-    load_photos: `/api/load-photo/`,
-    download_photos: `/api/download-photos/`
+    login: `http://localhost:5000/api/login`,
+    change_pass: `http://localhost:5000/api/change-pass`,
+    load_photos: `http://localhost:5000/api/load-photo/`,
+    download_photos: `http://localhost:5000/api/download-photos/`
 }

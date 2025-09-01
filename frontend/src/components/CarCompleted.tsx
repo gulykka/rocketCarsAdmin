@@ -16,6 +16,9 @@ const CarCompleted = () => {
         dispatch(applyDefaultSort());
     }, [dispatch]);
 
+    useEffect(() => {
+
+    }, [])
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value;
         if (value === 'newest' || value === 'oldest') {
@@ -25,14 +28,15 @@ const CarCompleted = () => {
 
     return (
         <>
+            <div className={'sort_container'}>
+                Сортировка по дате:
+                <select value={sortOrder} onChange={handleSortChange} defaultValue={"newest"}>
+                    <option value="newest">сначала новые</option>
+                    <option value="oldest">сначала старые</option>
+                </select>
+            </div>
             <div className={'work_panel_container'}>
-                <div className={'sort_container'}>
-                    Сортировка по дате:
-                    <select value={sortOrder} onChange={handleSortChange}>
-                        <option value="newest">сначала новые</option>
-                        <option value="oldest">сначала старые</option>
-                    </select>
-                </div>
+
                 <div className={'input_desktop'}><InputCompletedCar /></div>
             </div>
             <CompletedCarsList />

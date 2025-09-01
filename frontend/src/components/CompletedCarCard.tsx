@@ -13,7 +13,7 @@ interface CompletedCarCardProps {
     completedCar: ICar;
 }
 
-const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
+const   CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
     const [chosenPhoto, setChosenPhoto] = useState(0);
     const [visibleImageWindow, setVisibleImageWindow] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);

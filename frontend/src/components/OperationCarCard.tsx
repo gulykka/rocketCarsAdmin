@@ -103,16 +103,7 @@ const OperationCarCard: FC<OperationCarCardProps> = ({ operationCar }) => {
             }
 
             const blob = await response.blob();
-            const contentDisposition = response.headers.get('Content-Disposition');
             let filename = `${operationCar.name}_${operationCar.VIN}.zip`;
-
-            if (contentDisposition) {
-                const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-                if (match && match[1]) {
-                    filename = match[1].replace(/['"]/g, '');
-                }
-            }
-
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;

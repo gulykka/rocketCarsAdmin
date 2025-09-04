@@ -124,6 +124,7 @@ export const fetchSignIn = createAsyncThunk(
             if (!response.ok) {
                 return thunkAPI.rejectWithValue(data.message || 'Ошибка авторизации');
             }
+            // console.log(data)
             return data
         } catch (e: any) {
             console.log('Fetch error:', e);
@@ -246,31 +247,27 @@ const dataSlice = createSlice({
                     return -Infinity;
                 }
 
-                // Пробуем распарсить как ISO (например, "2021-08-15T03:00:00+03:00")
-                const isoDate = new Date(dateString);
-                if (!isNaN(isoDate.getTime())) {
-                    return isoDate.getTime();
-                }
-
-                // Пробуем DD.MM.YYYY (например, "12.06.2025")
+                // Парсим формат DD.MM.YYYY
                 const parts = dateString.split('.');
                 if (parts.length === 3) {
-                    const [day, month, year] = parts.map(Number);
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1; // месяцы в JS: 0-11
+                    const year = parseInt(parts[2], 10);
+
                     if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                        const date = new Date(year, month - 1, day);
+                        const date = new Date(year, month, day);
                         if (!isNaN(date.getTime())) {
-                            return date.getTime();
+                            return date.getTime(); // возвращает миллисекунды
                         }
                     }
                 }
 
-                return -Infinity;
+                return -Infinity; // невалидная дата → в конец
             };
 
             const sortedCars = [...carsToSort].sort((a, b) => {
-                // Сортируем по `year`, а не по `status.datetime`
-                const dateA = parseDate(a.year);
-                const dateB = parseDate(b.year);
+                const dateA = parseDate(a.status?.datetime);
+                const dateB = parseDate(b.status?.datetime);
                 return action.payload === 'newest' ? dateB - dateA : dateA - dateB;
             });
 
@@ -294,16 +291,14 @@ const dataSlice = createSlice({
                     return -Infinity;
                 }
 
-                const isoDate = new Date(dateString);
-                if (!isNaN(isoDate.getTime())) {
-                    return isoDate.getTime();
-                }
-
                 const parts = dateString.split('.');
                 if (parts.length === 3) {
-                    const [day, month, year] = parts.map(Number);
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1;
+                    const year = parseInt(parts[2], 10);
+
                     if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                        const date = new Date(year, month - 1, day);
+                        const date = new Date(year, month, day);
                         if (!isNaN(date.getTime())) {
                             return date.getTime();
                         }
@@ -314,8 +309,8 @@ const dataSlice = createSlice({
             };
 
             const sortedCars = [...state.data.cars].sort((a, b) => {
-                const dateA = parseDate(a.year);
-                const dateB = parseDate(b.year);
+                const dateA = parseDate(a.status?.datetime);
+                const dateB = parseDate(b.status?.datetime);
                 return dateB - dateA; // newest
             });
 

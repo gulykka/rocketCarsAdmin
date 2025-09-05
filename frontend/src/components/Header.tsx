@@ -58,6 +58,7 @@ const Header = () => {
             }
             <div className={'navigation'}>
 
+
                 <Link
                     className={'navigation_link'}
                     to={'/profile'}>
@@ -97,17 +98,18 @@ const Header = () => {
                     className={location === '/profile' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
                     Главная
                 </Link>
-                <Link
-                    onClick={() => setIsVisible(false)}
-                    to={'/completed'}
-                    className={location === '/completed' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
-                    Выданные  авто
-                </Link>
+
                 <Link
                     onClick={() => setIsVisible(false)}
                     to={'/operation'}
                     className={location === '/operation' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
                     Авто в работе
+                </Link>
+                <Link
+                    onClick={() => setIsVisible(false)}
+                    to={'/completed'}
+                    className={location === '/completed' ? 'grey_popup_menu_link' : 'popup_menu_link'}>
+                    Выданные  авто
                 </Link>
                 <Link
                     onClick={SignOut}

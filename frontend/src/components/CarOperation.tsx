@@ -9,7 +9,7 @@ const CarOperation = () => {
 
     return (
         <>
-            <div className={'work_panel_container'}>
+            <div className={'work_panel_container operation_work_panel_container'}>
                 <div className={'input_desktop'}><InputOperationCar/></div>
             </div>
             <OperationCarsList/>

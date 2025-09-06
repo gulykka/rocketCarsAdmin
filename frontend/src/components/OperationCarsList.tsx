@@ -25,10 +25,6 @@ const OperationCarsList = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedCars = carsToDisplay.slice(startIndex, startIndex + itemsPerPage);
 
-    useEffect(() => {
-        console.log(carsToDisplay)
-        console.log(searchBool)
-    }, [searchBool])
     return (
         <div className={'operation_car_container'}>
             {carsToDisplay.length === 0 ? (

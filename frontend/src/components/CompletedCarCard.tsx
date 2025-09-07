@@ -168,8 +168,7 @@ const CompletedCarCard: FC<CompletedCarCardProps> = ({ completedCar }) => {
                     />
                 )}
 
-                {/* Кнопка с анимацией "Скачивание." */}
-                {completedCar.photos.length > 0 && (
+                {completedCar.photos.length !== 0 && (
                     <ColorButton
                         onClick={downloadPhotos}
                         disabled={downloading}

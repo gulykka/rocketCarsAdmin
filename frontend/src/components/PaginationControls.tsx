@@ -38,6 +38,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({paginationType, 
             } else {
                 dispatch(setOperationCarsCurrentPage(page));
             }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
@@ -48,6 +49,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({paginationType, 
         } else {
             dispatch(setOperationCarsItemsPerPage(newItemsPerPage));
         }
+         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // Условия отрисовки - проверьте эти условия
@@ -119,7 +121,6 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({paginationType, 
                         <option value={5}>5</option>
                         <option value={10}>10</option>
                         <option value={20}>20</option>
-                        <option value={50}>50</option>
                     </select>
                 </div>
 

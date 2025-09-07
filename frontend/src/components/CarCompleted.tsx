@@ -1,18 +1,13 @@
-import React from 'react';
-import {
-    sortCarsByDate
-} from '../store/slices/carSlice';
+import React, {useEffect} from 'react';
+import { sortCarsByDate } from '../store/slices/carSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/redux-hooks';
 import InputCompletedCar from './InputCompletedCar';
 import CompletedCarsList from './CompletedCarsList';
 
 const CarCompleted = () => {
     const dispatch = useAppDispatch();
-
-    // Текущий порядок сортировки
     const sortOrder = useAppSelector(state => state.data.sortOrder);
 
-    // Обработчик изменения селекта
     const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value as 'newest' | 'oldest';
         if (value === 'newest' || value === 'oldest') {
@@ -20,11 +15,20 @@ const CarCompleted = () => {
         }
     };
 
+    useEffect(() => {
+        dispatch(sortCarsByDate('newest'));
+    }, [])
+
+
+
     return (
         <>
             <div className="sort_container">
                 Сортировка по дате:
-                <select value={sortOrder} onChange={handleSortChange}>
+                <select
+                    value={sortOrder}
+                    onChange={handleSortChange}
+                >
                     <option value="newest">сначала новые</option>
                     <option value="oldest">сначала старые</option>
                 </select>
